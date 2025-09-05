@@ -7,15 +7,20 @@ import {
   Typography,
   Paper,
   IconButton,
+  Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import "./vacancies.css";
 import type { VacancyResponse } from "./types";
+import { useNavigate } from "react-router";
 
 const VacanciesList: React.FC = () => {
   const [vacancies, setVacancies] = useState<VacancyResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVacancies();
@@ -57,7 +62,7 @@ const VacanciesList: React.FC = () => {
 
   return (
     <Box maxWidth="800px" mx="auto" p={3}>
-      <Typography className='text-center' variant="h5" gutterBottom>
+      <Typography align="center" variant="h5" gutterBottom>
         All Vacancies
       </Typography>
       <Stack spacing={2}>
@@ -69,6 +74,14 @@ const VacanciesList: React.FC = () => {
               onClick={() => handleDelete(vacancy.id)}
             >
               <DeleteIcon color="error" fontSize="medium" />
+            </IconButton>
+            {/* Edit Criteria Button */}
+            <IconButton
+              size="small"
+              sx={{ position: "absolute", top: 8, right: 48 }}
+              onClick={() => navigate(`/criteria/${vacancy.id}`)}
+            >
+              <EditIcon color="primary" fontSize="medium" />
             </IconButton>
             <Typography variant="h6">{vacancy.name}</Typography>
             <Stack className="tag-chip-container"  direction="row" spacing={1} mt={1} flexWrap="wrap">
@@ -90,6 +103,16 @@ const VacanciesList: React.FC = () => {
           </Paper>
         ))}
       </Stack>
+      {/* Add New Vacancy Button */}
+      <Box display="flex" justifyContent="center" mt={3}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate("/createVacancy")}
+        >
+          Add a new vacancy
+        </Button>
+      </Box>
     </Box>
   );
 };

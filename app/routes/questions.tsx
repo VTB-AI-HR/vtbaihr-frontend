@@ -13,7 +13,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 
 interface Question {
@@ -27,6 +27,7 @@ interface Question {
 const QuestionsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const vacancyId = Number(id);
+  const navigate = useNavigate();
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [genType, setGenType] = useState("soft");
@@ -125,7 +126,7 @@ const handleEdit = async (q: Question) => {
 
   return (
     <Box maxWidth="700px" mx="auto" p={3}>
-      <Typography variant="h5" gutterBottom>
+      <Typography align="center" variant="h5" gutterBottom>
         Questions
       </Typography>
 
@@ -196,6 +197,16 @@ const handleEdit = async (q: Question) => {
           />
         ))}
       </List>
+        <Box display="flex" mt={3}>
+        <Button
+        fullWidth
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/vacancies")}
+        >
+          Finish
+        </Button>
+      </Box>
     </Box>
   );
 };
