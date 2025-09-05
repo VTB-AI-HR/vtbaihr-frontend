@@ -202,7 +202,7 @@ const handleEdit = async (q: Question) => {
         fullWidth
           variant="contained"
           color="primary"
-          onClick={() => navigate("/vacancies")}
+          onClick={() => navigate("/vacancies?isRecruiter=true")}
         >
           Finish
         </Button>
