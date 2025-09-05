@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import "./createVacancy.css";
 import type { VacancyPayload, SkillLevel } from "./types";
 
@@ -23,6 +24,7 @@ const CreateVacancy: React.FC = () => {
   });
 
   const [skillInput, setSkillInput] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (field: keyof VacancyPayload, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -45,8 +47,11 @@ const CreateVacancy: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const res = await axios.post("https://vtb-aihr.ru/api/vacancy/create", form);
-      console.log("Created vacancy:", res.data);
+      const vacancyId = res.data?.vacancy_id;
       alert("Vacancy created successfully!");
+      if (vacancyId) {
+        navigate(`/criteria/${vacancyId}`);
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to create vacancy.");
@@ -58,7 +63,6 @@ const CreateVacancy: React.FC = () => {
       <Typography variant="h5" gutterBottom>
         Create Vacancy
       </Typography>
-
       <Stack spacing={3}>
         <TextField
           label="Vacancy Name"
@@ -80,10 +84,10 @@ const CreateVacancy: React.FC = () => {
               Add
             </Button>
           </Stack>
-          <Stack className="tag-chip-container" direction="row" spacing={12} mt={2} flexWrap="wrap">
+          <Stack className="tag-chip-container" direction="row" spacing={1} mt={2} flexWrap="wrap">
             {form.tags.map((skill) => (
               <Chip
-              className="tag-chip"
+                className="tag-chip"
                 key={skill}
                 label={skill}
                 onDelete={() => handleDeleteSkill(skill)}
