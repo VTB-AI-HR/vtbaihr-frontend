@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router";
 import "./createVacancy.css";
-import type { VacancyPayload, SkillLevel } from "./types";
+import type { VacancyPayload, SkillLevel } from "../types";
 
 const CreateVacancy: React.FC = () => {
   const [form, setForm] = useState<VacancyPayload>({

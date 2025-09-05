@@ -1,26 +1,24 @@
+// src/components/VacanciesList.tsx
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Chip,
   CircularProgress,
   Stack,
   Typography,
-  Paper,
-  IconButton,
   Button,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
-import "./vacancies.css";
-import type { VacancyResponse } from "./types";
-import { useNavigate } from "react-router";
+import type { VacancyResponse } from "../types";
+import { useNavigate, useSearchParams } from "react-router";
+import VacancyPaper from "../components/vacancy";
 
 const VacanciesList: React.FC = () => {
   const [vacancies, setVacancies] = useState<VacancyResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isRecruiter = searchParams.get('isRecruiter') === 'true';
 
   useEffect(() => {
     fetchVacancies();
@@ -67,52 +65,25 @@ const VacanciesList: React.FC = () => {
       </Typography>
       <Stack spacing={2}>
         {vacancies.map((vacancy) => (
-          <Paper key={vacancy.id} elevation={2} sx={{ p: 2, position: "relative" }}>
-            <IconButton
-              size="small"
-              sx={{ position: "absolute", top: 8, right: 8 }}
-              onClick={() => handleDelete(vacancy.id)}
-            >
-              <DeleteIcon color="error" fontSize="medium" />
-            </IconButton>
-            {/* Edit Criteria Button */}
-            <IconButton
-              size="small"
-              sx={{ position: "absolute", top: 8, right: 48 }}
-              onClick={() => navigate(`/criteria/${vacancy.id}`)}
-            >
-              <EditIcon color="primary" fontSize="medium" />
-            </IconButton>
-            <Typography variant="h6">{vacancy.name}</Typography>
-            <Stack className="tag-chip-container"  direction="row" spacing={1} mt={1} flexWrap="wrap">
-              {vacancy.tags.map((tag) => (
-                <Chip  className="tag-chip" key={tag} label={tag} />
-              ))}
-            </Stack>
-            <Typography mt={1}>{vacancy.description}</Typography>
-            <Typography mt={1} color="error">
-              Red Flags: {vacancy.red_flags || "None"}
-            </Typography>
-            <Typography mt={1}>
-              Skill Level: {vacancy.skill_lvl} | Response Time:{" "}
-              {vacancy.question_response_time}h
-            </Typography>
-            <Typography mt={1} color="text.secondary">
-              Questions Type: {vacancy.questions_type}
-            </Typography>
-          </Paper>
+          <VacancyPaper
+            key={vacancy.id}
+            vacancy={vacancy}
+            isRecruiter={isRecruiter}
+            onDelete={handleDelete}
+          />
         ))}
       </Stack>
-      {/* Add New Vacancy Button */}
-      <Box display="flex" justifyContent="center" mt={3}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate("/createVacancy")}
-        >
-          Add a new vacancy
-        </Button>
-      </Box>
+      {isRecruiter && (
+        <Box display="flex" justifyContent="center" mt={3}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate("/createVacancy")}
+          >
+            Add a new vacancy
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

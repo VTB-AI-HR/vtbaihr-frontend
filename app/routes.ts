@@ -5,4 +5,7 @@ export default [index("routes/home.tsx"),
     route("vacancies", "routes/vacancies.tsx"),
     route("criteria/:id", "routes/criteria.tsx"),
     route("questions/:id", "routes/questions.tsx"),
+    route("apply/:id", "routes/apply.tsx"),
+    route("rejected", "routes/rejected.tsx"),
+    route("interview/:interviewId", "routes/interview.tsx"),
 ] satisfies RouteConfig;
