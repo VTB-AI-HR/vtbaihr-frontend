@@ -8,6 +8,7 @@ import StopIcon from "@mui/icons-material/Stop";
 interface InterviewResponse {
   question_id: number;
   message_to_candidate: string;
+  interview_result: object;
 }
 
 const interview: React.FC = () => {
@@ -76,8 +77,14 @@ const interview: React.FC = () => {
           },
         }
       );
-      setMessage(res.data.message_to_candidate);
-      setCurrentQuestionId(res.data.question_id);
+
+      // Check if the interview is complete
+      if (Object.keys(res.data.interview_result).length > 0) {
+        navigate("/thankyou");
+      } else {
+        setMessage(res.data.message_to_candidate);
+        setCurrentQuestionId(res.data.question_id);
+      }
     } catch (err) {
       console.error(err);
       alert("Failed to submit your response. Please try again.");
