@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import type { VacancyResponse } from "../types";
 import { useNavigate } from "react-router";
 import "./vacancy.css";
@@ -34,6 +35,10 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
 
   const handleDelete = () => {
     onDelete(vacancy.id);
+  };
+
+  const handleViewResults = () => {
+    navigate(`/vacancyInterviews/${vacancy.id}`);
   };
 
   return (
@@ -73,13 +78,18 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
       <Typography mt={1} color="text.secondary">
         Questions Type: {vacancy.questions_type}
       </Typography>
-      {isRecruiter === false && (
-        <Box mt={2}>
+      <Box mt={2} display="flex" gap={2}>
+        {isRecruiter === false && (
           <Button variant="contained" onClick={handleApply}>
             Apply
           </Button>
-        </Box>
-      )}
+        )}
+        {isRecruiter === true && (
+          <Button variant="contained" startIcon={<AssessmentIcon />} onClick={handleViewResults}>
+            Interview Results
+          </Button>
+        )}
+      </Box>
     </Paper>
   );
 };

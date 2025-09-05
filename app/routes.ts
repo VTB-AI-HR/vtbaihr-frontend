@@ -8,5 +8,7 @@ export default [index("routes/home.tsx"),
     route("apply/:id", "routes/apply.tsx"),
     route("rejected", "routes/rejected.tsx"),
     route("interview/:interviewId", "routes/interview.tsx"),
+    route("vacancyInterviews/:id", "routes/vacancyInterviews.tsx"),
+    route("interviewDetails/:id", "routes/interviewDetails.tsx"),
     route("thankyou", "routes/thankyou.tsx"),
 ] satisfies RouteConfig;
