@@ -5,13 +5,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Box, IconButton, Paper } from "@mui/material";
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import GroupIcon from '@mui/icons-material/Group';
 
 export const links: Route.LinksFunction = () => [
-    { rel: "icon", href: "/favicon.png", type: "image/png" },
+  { rel: "icon", href: "/favicon.png", type: "image/png" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -43,7 +46,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const navigate = useNavigate();
+
+  return (
+    <Box position="relative">
+      <Paper
+        elevation={3}
+        sx={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          p: 0.5,
+          zIndex: 10,
+          borderRadius: 2
+        }}
+      >
+        <IconButton onClick={() => navigate("/vacancies?isRecruiter=true")} aria-label="Recruiter View" sx={{ color: 'primary.main' }}>
+          <BusinessCenterIcon />
+        </IconButton>
+        <IconButton onClick={() => navigate("/vacancies")} aria-label="Candidate View" sx={{ color: 'text.secondary' }}>
+          <GroupIcon />
+        </IconButton>
+      </Paper>
+      <Outlet />
+    </Box>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
