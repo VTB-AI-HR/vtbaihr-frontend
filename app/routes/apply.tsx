@@ -107,7 +107,7 @@ const ApplyVacancy: React.FC = () => {
         Apply for Vacancy
       </Typography>
       <Box mb={4}>
-        <VacancyPaper vacancy={vacancy} isRecruiter={false} onDelete={() => {}} />
+        <VacancyPaper vacancy={vacancy} onDelete={() => {}} />
       </Box>
 
       <Paper elevation={2} sx={{ p: 3 }}>
@@ -124,7 +124,7 @@ const ApplyVacancy: React.FC = () => {
               onChange={(e) => setCandidateEmail(e.target.value)}
               required
             />
-            <Typography variant="subtitle1">Upload Resume (PDF/DOCX)</Typography>
+            <Typography variant="subtitle1">Upload Resume (PDF/DOCX/DOC/TXT/RTF)</Typography>
             <Input
               type="file"
               onChange={(e) => {
@@ -134,7 +134,7 @@ const ApplyVacancy: React.FC = () => {
                 }
               }}
               required
-              inputProps={{ accept: ".pdf,.docx" }}
+              inputProps={{ accept: ".pdf,.docx,.doc,.txt,.rtf" }}
             />
             <Button
               type="submit"
