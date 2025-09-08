@@ -30,7 +30,7 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
   };
 
   const handleEdit = () => {
-    navigate(`/criteria/${vacancy.id}`);
+    navigate(`/questions/${vacancy.id}`);
   };
 
   const handleDelete = () => {
@@ -70,13 +70,6 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
       <Typography mt={1}>{vacancy.description}</Typography>
       <Typography mt={1} color="error">
         Red Flags: {vacancy.red_flags || "None"}
-      </Typography>
-      <Typography mt={1}>
-        Skill Level: {vacancy.skill_lvl} | Response Time:{" "}
-        {vacancy.question_response_time}h
-      </Typography>
-      <Typography mt={1} color="text.secondary">
-        Questions Type: {vacancy.questions_type}
       </Typography>
       <Box mt={2} display="flex" gap={2}>
         {isRecruiter === false && (

@@ -16,12 +16,13 @@ import {
   Paper,
   Chip,
   Button,
+  useTheme,
 } from "@mui/material";
 import { type CandidateEvaluation } from "../types";
+import { useNavigate, useParams } from "react-router";
 
 interface CandidatesTabProps {
   candidates: CandidateEvaluation[];
-//   vacancyId: string;
 }
 
 const statusMap: { [key: string]: { label: string; color: "success" | "warning" | "error" | "default" } } = {
@@ -32,14 +33,20 @@ const statusMap: { [key: string]: { label: string; color: "success" | "warning" 
 
 const CandidatesTab: React.FC<CandidatesTabProps> = ({
   candidates,
-//   vacancyId,
 }) => {
+  const navigate = useNavigate();
+  const { vacancy_id: vacancy_id } = useParams<{ vacancy_id: string }>();
+
   const [filters, setFilters] = useState({
     candidate: "",
     resumeAssessment: "",
     interviewAssessment: "",
     status: "",
   });
+
+const handleRowClick = (id: number) => {
+    navigate("/vacancy/" + vacancy_id + "/interviewDetails/" + id);
+  };
 
   const handleFilterChange = (event: React.ChangeEvent<{ value: unknown; name?: string; }>) => {
     setFilters({
@@ -118,7 +125,9 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
           </TableHead>
           <TableBody>
             {filteredCandidates.map((candidate) => (
-              <TableRow key={candidate.id}>
+              <TableRow key={candidate.id} onClick={() => handleRowClick(candidate.id)}
+              sx={{ cursor: "pointer", "&:hover": { backgroundColor: useTheme().palette.action.hover } }}
+              >
                 <TableCell>{candidate.candidate_name}</TableCell>
                 <TableCell>
                   <Typography variant="body2">{candidate.candidate_email}</Typography>
@@ -141,7 +150,10 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
                 </TableCell>
                 <TableCell>
                   {candidate.general_result === "next" && (
-                    <Button variant="contained" size="small">
+                    <Button variant="contained" size="small" onClick={(e) => {
+                      e.stopPropagation();
+                      // navigate("/send-invitation/" + candidate.id);
+                    }}>
                       Send Invitation
                     </Button>
                   )}

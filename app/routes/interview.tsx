@@ -160,7 +160,7 @@ const InterviewApp = () => {
       return <CircularProgress />;
     }
 
-    if (messages.length === 1 && typeof messages[0].content === 'string' && messages[0].content.includes("Welcome")) {
+    if (messages.length === 1 && typeof messages[0].content === 'string') {
       return (
         <IconButton
           sx={{ width: 80, height: 80, backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#388e3c' } }}

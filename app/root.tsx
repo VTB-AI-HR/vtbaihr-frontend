@@ -5,16 +5,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useNavigate
+  useNavigate,
+  useLocation
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { Box, IconButton, Paper } from "@mui/material";
+import { Box, IconButton, Paper, Button, Typography, Stack } from "@mui/material";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import theme from "./theme";
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import GroupIcon from '@mui/icons-material/Group';
 import LayersIcon from '@mui/icons-material/Layers';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.png", type: "image/png" },
@@ -29,6 +32,71 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+const SideBar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const routesToShowSidebar = ['/createVacancy', '/vacancies', '/resumeScreening'];
+  const isSidebarVisible = routesToShowSidebar.some(route => location.pathname.startsWith(route));
+
+  const isResumeScreeningActive = location.pathname.startsWith('/resumeScreening');
+  
+  if (!isSidebarVisible) {
+    return null;
+  }
+
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        left: 0,
+        top: 0,
+        width: "210px",
+        height: "100vh",
+        bgcolor: "background.paper",
+        boxShadow: 3,
+        zIndex: 10,
+        pt: 2,
+        pl: 1,
+        pr: 1
+      }}
+    >
+      <Stack spacing={2} sx={{ width: '100%' }}>
+        <Button
+          startIcon={<ContentPasteIcon />}
+          sx={{
+            justifyContent: 'flex-start',
+            width: '100%',
+            color: isResumeScreeningActive ? 'text.secondary' : 'primary.main',
+            backgroundColor: isResumeScreeningActive ? 'inherit' : 'action.selected',
+            '&:hover': {
+              backgroundColor: isResumeScreeningActive ? 'inherit' : 'action.selected'
+            }
+          }}
+          onClick={() => navigate("/vacancies?isRecruiter=true")}
+        >
+          <Typography variant="button">Vacancies</Typography>
+        </Button>
+        <Button
+          startIcon={<SearchIcon />}
+          sx={{
+            justifyContent: 'flex-start',
+            width: '100%',
+            color: isResumeScreeningActive ? 'primary.main' : 'text.secondary',
+            backgroundColor: isResumeScreeningActive ? 'action.selected' : 'inherit',
+            '&:hover': {
+              backgroundColor: isResumeScreeningActive ? 'action.selected' : 'inherit'
+            }
+          }}
+          onClick={() => navigate("/resumeScreening")}
+        >
+          <Typography variant="button">Resume Screening</Typography>
+        </Button>
+      </Stack>
+    </Box>
+  );
+};
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -55,10 +123,11 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box position="relative">
+        <SideBar />
         <Paper
           elevation={3}
           sx={{
-            position: "absolute",
+            position: "fixed",
             top: 16,
             right: 16,
             p: 0.5,
