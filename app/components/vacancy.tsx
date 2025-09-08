@@ -77,14 +77,14 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
         <Box mt={3} display="flex" gap={2}>
           {isRecruiter === false && (
             <Button
-              size="large"
+              size="medium"
               variant="contained" onClick={handleApply}>
               Перейти к вакансии
             </Button>
           )}
           {isRecruiter === true && (
             <Button
-              size="large"
+              size="medium"
               variant="contained" onClick={handleViewResults}>
               Посмотреть отклики (кол-во)
             </Button>
