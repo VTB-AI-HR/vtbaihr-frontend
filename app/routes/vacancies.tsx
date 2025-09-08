@@ -94,7 +94,6 @@ const fetchVacancies = async () => {
         </div>
         {isRecruiter && (
           <Button
-            size="large"
             variant="contained"
             onClick={() => navigate("/createVacancy")}
           >

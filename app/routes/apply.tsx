@@ -5,8 +5,12 @@ import {
   Typography,
   Button,
   TextField,
-  Stack
+  Stack,
+  Paper,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import axios from "axios";
 import type { VacancyResponse } from "../types";
 import { useNavigate, useParams } from "react-router";
@@ -21,6 +25,12 @@ const ApplyVacancy: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [candidateEmail, setCandidateEmail] = useState("");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+
+  const [result, setResult] = useState<{
+    success: boolean;
+    message: string;
+    interviewLink?: string;
+  } | null>({success: false, interviewLink:'pornhub.com', message: "lorem ipsum dolor sit amet lorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit amet"});
 
   useEffect(() => {
     fetchVacancy();
@@ -44,10 +54,7 @@ const ApplyVacancy: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!resumeFile) {
-      alert("Please upload a resume file.");
-      return;
-    }
+    if (!resumeFile) return alert("Please upload a resume file.");
 
     setIsSubmitting(true);
     const formData = new FormData();
@@ -57,23 +64,19 @@ const ApplyVacancy: React.FC = () => {
 
     try {
       const res = await axios.post("https://vtb-aihr.ru/api/vacancy/respond", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       const data = res.data;
-      if (data.accordance_xp_vacancy_score >= 3 && data.accordance_skill_vacancy_score >= 3) {
-        navigate('/interview/' + data.interview_link.split('/').at(-1), {
-          state: {
-            message: data.message_to_candidate,
-            vacancy_id: vacancy?.id,
-          },
-        });
-      }
-      else {
-        navigate("/rejected", { state: { message: data.message_to_candidate } });
-      }
+      const passed = data.accordance_xp_vacancy_score >= 3 && data.accordance_skill_vacancy_score >= 3;
+
+      setResult({
+        success: passed,
+        message: passed
+          ? "Нам понравилось ваше резюме, и мы рады пригласить вас пройти интервью. Скопируйте ссылку ниже и перейдите по ней, чтобы начать интервью"
+          : "К сожалению, ваше резюме не соответствует требованиям вакансии. Спасибо за отклик.",
+        interviewLink: passed ? 'https://vtb-aihr.ru/interview/' + data.interview_link.split('/').at(-1) : undefined,
+      });
     } catch (err) {
       console.error(err);
       alert("Failed to submit application.");
@@ -100,6 +103,73 @@ const ApplyVacancy: React.FC = () => {
     );
   }
 
+  if (result) {
+    return (
+      <Box maxWidth="560px" mx="auto" p={3} mb={5}>
+        <Back />
+        <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
+          Отклик на вакансию
+        </Typography>
+        <Box mb={4}>
+          <VacancyPaper vacancy={vacancy} onDelete={() => { }} />
+        </Box>
+      <Typography variant="h6" fontSize={24} fontWeight={600} gutterBottom>
+        Отклик
+      </Typography>
+
+        <Paper
+          elevation={3}
+          sx={{
+            mb: 2,
+            p: 3,
+            backgroundColor: result.success ? "#EDF6FF" : "#FFF4E5",
+            color: result.success ? "#3361EC" : "#663C00",
+          }}
+        >
+          <Typography fontWeight={500}>{result.message}</Typography>
+
+
+        </Paper >
+          {result.success && result.interviewLink && (
+            <>
+            <TextField
+              fullWidth
+              value={result.interviewLink}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => navigator.clipboard.writeText(result.interviewLink!)}
+                      >
+                      <FileCopyIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              />
+          <Typography style={{ marginTop: -4 }} color="#778093" variant="caption">
+            Пройти интервью можно только один раз
+          </Typography>
+              </>
+
+          )}
+
+        {!result.success && (
+          <Button
+            fullWidth
+            size="medium"
+            variant="contained"
+            sx={{ mt: 2 }}
+            onClick={() => navigate("/vacancies")}
+          >
+            К вакансиям
+          </Button>
+        )}
+      </Box>
+    );
+  }
+
   return (
     <Box maxWidth="560px" mx="auto" p={3}>
       <Back />
@@ -121,7 +191,6 @@ const ApplyVacancy: React.FC = () => {
             value={candidateEmail}
             onChange={(e) => setCandidateEmail(e.target.value)}
           />
-
 
           <Stack direction="row" spacing={1} alignItems="center">
             <TextField
@@ -151,7 +220,7 @@ const ApplyVacancy: React.FC = () => {
             accept=".pdf,.docx,.doc,.txt,.rtf"
             required
           />
-          <Typography style={{marginTop: -4}} color="#778093" variant="caption">
+          <Typography style={{ marginTop: -4 }} color="#778093" variant="caption">
             Формат PDF / DOCX / DOC / TXT / RTF
           </Typography>
 

@@ -67,27 +67,30 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
       )}
       <Typography variant="h6">{vacancy.name}</Typography>
       <Typography variant='body2' mt={1}>{vacancy.description}</Typography>
-        <Stack direction="row" mt={2} flexWrap="wrap">
+      <Stack direction="row" mt={2} flexWrap="wrap">
         {vacancy.tags.map((tag) => (
           <Chip className="tag-chip" key={tag} label={tag} />
         ))}
       </Stack>
-      <Box mt={3} display="flex" gap={2}>
-        {isRecruiter === false && (
-          <Button
-            size="large"
-            variant="contained" onClick={handleApply}>
-            Перейти к вакансии
-          </Button>
-        )}
-        {isRecruiter === true && (
-          <Button
-            size="large"
-            variant="contained" onClick={handleViewResults}>
-            Посмотреть отклики (кол-во)
-          </Button>
-        )}
-      </Box>
+      {
+        isRecruiter !== undefined &&
+        <Box mt={3} display="flex" gap={2}>
+          {isRecruiter === false && (
+            <Button
+              size="large"
+              variant="contained" onClick={handleApply}>
+              Перейти к вакансии
+            </Button>
+          )}
+          {isRecruiter === true && (
+            <Button
+              size="large"
+              variant="contained" onClick={handleViewResults}>
+              Посмотреть отклики (кол-во)
+            </Button>
+          )}
+        </Box>
+      }
     </Paper>
   );
 };

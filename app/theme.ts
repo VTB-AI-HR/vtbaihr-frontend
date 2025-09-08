@@ -111,6 +111,9 @@ const theme = createTheme({
         sizeLarge: {
           height: 56,
         },
+        sizeMedium: {
+          height: 44,
+        },
       },
     },
   },
