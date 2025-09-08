@@ -30,7 +30,7 @@ const ApplyVacancy: React.FC = () => {
     success: boolean;
     message: string;
     interviewLink?: string;
-  } | null>({success: false, interviewLink:'pornhub.com', message: "lorem ipsum dolor sit amet lorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit amet"});
+  } | null>(null);
 
   useEffect(() => {
     fetchVacancy();
