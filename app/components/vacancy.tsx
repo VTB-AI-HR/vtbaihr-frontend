@@ -38,7 +38,7 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
   };
 
   const handleViewResults = () => {
-    navigate(`/vacancyInterviews/${vacancy.id}`);
+    navigate(`/vacancy/${vacancy.id}`);
   };
 
   return (

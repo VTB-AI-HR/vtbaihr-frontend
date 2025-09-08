@@ -7,12 +7,11 @@ export interface VacancyPayload {
   description: string;
   red_flags: string;
   skill_lvl: SkillLevel;
-  question_response_time: number;
 }
+
 
 export interface VacancyResponse extends VacancyPayload {
   id: number;
-  questions_type: string;
 }
 
 export interface InterviewResult {
@@ -60,4 +59,39 @@ export interface InterviewMessage {
 export interface InterviewResultDetails {
   candidate_answers: CandidateAnswer[];
   interview_messages: InterviewMessage[];
+}
+
+export interface CandidateEvaluation {
+  id: number;
+  vacancy_id: number;
+  candidate_email: string;
+  candidate_name?: string;
+  candidate_phone: string;
+  candidate_resume_fid: string;
+  accordance_xp_vacancy_score: number;
+  accordance_skill_vacancy_score: number;
+  red_flag_score: number;
+  hard_skill_score: number;
+  soft_skill_score: number;
+  logic_structure_score: number;
+  accordance_xp_resume_score: number;
+  accordance_skill_resume_score: number;
+  strong_areas: string;
+  weak_areas: string;
+  general_score: number;
+  general_result: 'next' | 'rejected' | 'in_process';
+  message_to_candidate: string;
+  message_to_hr: string;
+  created_at: string;
+}
+
+export interface Question {
+  id: number;
+  vacancy_id: number;
+  question: string;
+  hint_for_evaluation: string;
+  weight: number;
+  question_type: string;
+  response_time: number;
+  created_at: string;
 }

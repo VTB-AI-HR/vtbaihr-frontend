@@ -57,22 +57,22 @@ const ApplyVacancy: React.FC = () => {
     formData.append("candidate_resume_file", resumeFile);
 
     try {
-      const res = await axios.post("https://vtb-aihr.ru/api/vacancy/interview/start", formData, {
+      const res = await axios.post("https://vtb-aihr.ru/api/vacancy/respond", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
       const data = res.data;
-      if (data.is_suitable) {
-        navigate(`/interview/${data.interview_id}`, {
+      if (data.accordance_xp_vacancy_score >= 3 && data.accordance_skill_vacancy_score >= 3) {
+        navigate('/interview/' + data.interview_link.split('/').at(-1), {
           state: {
             message: data.message_to_candidate,
-            question_id: data.question_id,
             vacancy_id: vacancy?.id,
           },
         });
-      } else {
+      }
+      else {
         navigate("/rejected", { state: { message: data.message_to_candidate } });
       }
     } catch (err) {

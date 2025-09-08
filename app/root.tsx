@@ -12,6 +12,7 @@ import "./app.css";
 import { Box, IconButton, Paper } from "@mui/material";
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import GroupIcon from '@mui/icons-material/Group';
+import LayersIcon from '@mui/icons-material/Layers';
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.png", type: "image/png" },
@@ -61,6 +62,9 @@ export default function App() {
           borderRadius: 2
         }}
       >
+        <IconButton onClick={() => navigate("/resumeScreening")} aria-label="Mass Resume Screening" sx={{ color: 'primary.main' }}>
+          <LayersIcon />
+        </IconButton>
         <IconButton onClick={() => navigate("/vacancies?isRecruiter=true")} aria-label="Recruiter View" sx={{ color: 'primary.main' }}>
           <BusinessCenterIcon />
         </IconButton>

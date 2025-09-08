@@ -29,7 +29,7 @@ const InterviewDetailsPage: React.FC = () => {
     }
     try {
       const res = await axios.get<InterviewResultDetails>(
-        `https://vtb-aihr.ru/api/vacancy/interview/details/${id}`
+        `https://vtb-aihr.ru/api/vacancy/interview/${id}/details`
       );
       setDetails(res.data);
     } catch (err) {
