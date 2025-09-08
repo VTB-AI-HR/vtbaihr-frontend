@@ -14,21 +14,47 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+          borderRadius: 8,
+          "& .MuiInputLabel-root": {
+            color: "#778093",
+          },
+          "& .MuiInputLabel-root.Mui-disabled": {
+            color: "#778093",
+          },
+          "& .MuiOutlinedInput-root": {
+            border: "none",
+            "&.Mui-focused fieldset": {
+              border: "none",
+            },
+            "& fieldset": {
+              border: "none",
+            },
+          },
+        },
+      },
+    },
     MuiTypography: {
       styleOverrides: {
         subtitle1: {
           fontWeight: 500,
           fontSize: 14,
         },
+        subtitle2: {
+          color: '#778093'
+        },
       },
     },
-
     MuiPaper: {
       styleOverrides: {
         root: {
           backgroundColor: "#ffffff",
           borderRadius: 12,
           padding: 16,
+          boxShadow: 'none'
         },
       },
     },
@@ -52,6 +78,24 @@ const theme = createTheme({
         },
       },
     },
+    MuiSlider: {
+      styleOverrides: {
+        rail: {
+          backgroundColor: "#d4d6da",
+        },
+        track: {
+          backgroundColor: "#3361ec", // left side before the thumb
+        },
+        mark: {
+          display: "none", // hide marks
+        },
+        thumb: {
+          backgroundColor: "white",
+          height: 28,
+          width: 28,
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -63,6 +107,9 @@ const theme = createTheme({
           "&:hover": {
             backgroundColor: "#2549C5",
           },
+        },
+        sizeLarge: {
+          height: 56,
         },
       },
     },

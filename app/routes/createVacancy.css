@@ -2,6 +2,6 @@
     margin: 0 !important;
 }
 
-.tag-chip-container {
-    gap: 10px !important;
+.generate-button {
+    width: 190px !important;
 }

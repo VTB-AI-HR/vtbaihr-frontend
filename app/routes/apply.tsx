@@ -3,16 +3,15 @@ import {
   Box,
   CircularProgress,
   Typography,
-  Paper,
   Button,
   TextField,
-  Input,
   Stack
 } from "@mui/material";
 import axios from "axios";
 import type { VacancyResponse } from "../types";
 import { useNavigate, useParams } from "react-router";
 import VacancyPaper from "../components/vacancy";
+import Back from "~/components/back";
 
 const ApplyVacancy: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -102,51 +101,71 @@ const ApplyVacancy: React.FC = () => {
   }
 
   return (
-    <Box maxWidth="800px" mx="auto" p={3}>
-      <Typography align="center" variant="h5" gutterBottom>
-        Apply for Vacancy
+    <Box maxWidth="560px" mx="auto" p={3}>
+      <Back />
+      <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
+        Отклик на вакансию
       </Typography>
       <Box mb={4}>
-        <VacancyPaper vacancy={vacancy} onDelete={() => {}} />
+        <VacancyPaper vacancy={vacancy} onDelete={() => { }} />
       </Box>
+      <Typography variant="h6" fontSize={24} fontWeight={600} gutterBottom>
+        Отклик
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={2}>
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={candidateEmail}
+            onChange={(e) => setCandidateEmail(e.target.value)}
+          />
 
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Application Form
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
+
+          <Stack direction="row" spacing={1} alignItems="center">
             <TextField
               fullWidth
-              label="Candidate Email"
-              type="email"
-              value={candidateEmail}
-              onChange={(e) => setCandidateEmail(e.target.value)}
-              required
-            />
-            <Typography variant="subtitle1">Upload Resume (PDF/DOCX/DOC/TXT/RTF)</Typography>
-            <Input
-              type="file"
-              onChange={(e) => {
-                const target = e.target as HTMLInputElement;
-                if (target.files) {
-                  setResumeFile(target.files[0]);
-                }
-              }}
-              required
-              inputProps={{ accept: ".pdf,.docx,.doc,.txt,.rtf" }}
+              label="Resume"
+              disabled
+              value={resumeFile?.name || ""}
+              InputProps={{ readOnly: true }}
             />
             <Button
-              type="submit"
               variant="contained"
-              fullWidth
-              disabled={isSubmitting}
+              size="large"
+              onClick={() => document.getElementById("resume-upload")?.click()}
             >
-              {isSubmitting ? <CircularProgress size={24} /> : "Submit Application"}
+              Загрузить
             </Button>
           </Stack>
-        </form>
-      </Paper>
+
+          <input
+            id="resume-upload"
+            type="file"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const target = e.target as HTMLInputElement;
+              if (target.files) setResumeFile(target.files[0]);
+            }}
+            accept=".pdf,.docx,.doc,.txt,.rtf"
+            required
+          />
+          <Typography style={{marginTop: -4}} color="#778093" variant="caption">
+            Формат PDF / DOCX / DOC / TXT / RTF
+          </Typography>
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <CircularProgress size={24} /> : "Отправить отклик"}
+          </Button>
+        </Stack>
+      </form>
     </Box>
   );
 };

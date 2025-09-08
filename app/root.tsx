@@ -122,8 +122,8 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box position="relative">
-        <SideBar />
+      <Box margin='auto' position="relative">
+        {/* <SideBar /> */}
         <Paper
           elevation={3}
           sx={{

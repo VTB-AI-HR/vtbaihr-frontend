@@ -11,13 +11,16 @@ import {
   IconButton,
   InputAdornment,
   Collapse,
+  Tooltip,
+  Badge,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import InfoIcon from '@mui/icons-material/Info';
 import axios from "axios";
 import { useNavigate } from "react-router";
-
-// Types
+import "./createVacancy.css";
+import Back from "~/components/back";
 
 type SkillLevel = "junior" | "middle" | "senior" | "lead";
 
@@ -26,7 +29,7 @@ interface VacancyPayload {
   tags: string[];
   description: string;
   red_flags: string;
-  skill_lvl: SkillLevel;
+  skill_lvl: SkillLevel | undefined;
 }
 
 interface ReviewWeights {
@@ -65,7 +68,22 @@ const SliderField = memo(
     <Box display="flex" flexDirection="column" gap={1}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography gutterBottom>{label}</Typography>
-        <Chip label={value} color="primary" size="small" />
+        <Badge
+          badgeContent={2}
+          color="primary"
+          variant="standard"
+          sx={{
+            '& .MuiBadge-badge': {
+              backgroundColor: 'rgba(237, 246, 255, 1)',
+              border: '1px solid rgba(51, 97, 236, 1)',
+              color: 'rgba(51, 97, 236, 1)',
+              height: 24,
+              width: 24,
+              borderRadius: 2,
+              fontSize: 14,
+            },
+          }}
+        />
       </Box>
       <Slider
         value={value}
@@ -82,10 +100,9 @@ const SliderField = memo(
 
 const TagInput = memo(({ newTag, setNewTag, tags, onAdd, onDelete, onGenerate, loading }: any) => (
   <Box>
-    <Typography variant="subtitle1">Tags</Typography>
-    <Stack direction="row" spacing={1} mt={1}>
+    <Stack direction="row" spacing={1}>
       <TextField
-        label="Enter tags"
+        label="Тэги"
         value={newTag}
         onChange={(e) => setNewTag(e.target.value)}
         onKeyDown={(e) => {
@@ -95,15 +112,15 @@ const TagInput = memo(({ newTag, setNewTag, tags, onAdd, onDelete, onGenerate, l
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={onAdd}>
+              <IconButton onClick={onAdd} sx={{ borderRadius: 2, backgroundColor: "#3361EC", color: "#fff" }}>
                 <AddIcon />
               </IconButton>
             </InputAdornment>
           ),
         }}
       />
-      <Button onClick={onGenerate} variant="contained" disabled={loading}>
-        {loading ? "Generating..." : "Generate"}
+      <Button className="generate-button" onClick={onGenerate} variant="contained" disabled={loading}>
+        {loading ? "Генерация..." : "Сгенерировать"}
       </Button>
     </Stack>
     <Stack direction="row" spacing={1} mt={2} flexWrap="wrap">
@@ -122,23 +139,23 @@ const CreateVacancy: React.FC = () => {
     tags: [],
     description: "",
     red_flags: "",
-    skill_lvl: "junior",
+    skill_lvl: undefined,
   });
 
   const [reviewWeights, setReviewWeights] = useState<ReviewWeights>({
-    accordance_xp_vacancy_score_threshold: 0,
-    accordance_skill_vacancy_score_threshold: 0,
-    recommendation_weight: 0,
-    portfolio_weight: 0,
+    accordance_xp_vacancy_score_threshold: 3,
+    accordance_skill_vacancy_score_threshold: 3,
+    recommendation_weight: 3,
+    portfolio_weight: 3,
   });
 
   const [interviewWeights, setInterviewWeights] = useState<InterviewWeights>({
-    logic_structure_score_weight: 0,
-    soft_skill_score_weight: 0,
-    hard_skill_score_weight: 0,
-    accordance_xp_resume_score_weight: 0,
-    accordance_skill_resume_score_weight: 0,
-    red_flag_score_weight: 0,
+    logic_structure_score_weight: 3,
+    soft_skill_score_weight: 3,
+    hard_skill_score_weight: 3,
+    accordance_xp_resume_score_weight: 3,
+    accordance_skill_resume_score_weight: 3,
+    red_flag_score_weight: 3,
   });
 
   const [newTag, setNewTag] = useState("");
@@ -227,13 +244,14 @@ const CreateVacancy: React.FC = () => {
   }, [form, reviewWeights, interviewWeights, navigate]);
 
   return (
-    <Box maxWidth="600px" mx="auto" p={3}>
-      <Typography variant="h5" gutterBottom>
-        Create Vacancy
+    <Box maxWidth="560px" mx="auto" mt={4}>
+      <Back />
+      <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
+        Создание вакансии
       </Typography>
 
-      <Stack spacing={3}>
-        <VacancyField label="Vacancy Name" value={form.name} onChange={(v: string) => handleFormChange("name", v)} />
+      <Stack spacing={1}>
+        <VacancyField label="Название вакансии" value={form.name} onChange={(v: string) => handleFormChange("name", v)} />
         <TagInput
           newTag={newTag}
           setNewTag={setNewTag}
@@ -243,16 +261,19 @@ const CreateVacancy: React.FC = () => {
           onGenerate={handleGenerateTags}
           loading={loading}
         />
-        <VacancyField label="Description" value={form.description} onChange={(v: string) => handleFormChange("description", v)} multiline />
-        <VacancyField label="Red Flags" value={form.red_flags} onChange={(v: string) => handleFormChange("red_flags", v)} multiline />
+        <VacancyField label="Описание вакансии" value={form.description} onChange={(v: string) => handleFormChange("description", v)} multiline />
+        <VacancyField label="Красные флаги" value={form.red_flags} onChange={(v: string) => handleFormChange("red_flags", v)} />
 
         <TextField
           select
-          label="Skill Level"
           value={form.skill_lvl}
+          label="Уровень специалиста"
           onChange={(e) => handleFormChange("skill_lvl", e.target.value as SkillLevel)}
           fullWidth
         >
+          {/* <MenuItem disabled value="default">
+            Уровень специалиста
+          </MenuItem> */}
           <MenuItem value="junior">Junior</MenuItem>
           <MenuItem value="middle">Middle</MenuItem>
           <MenuItem value="senior">Senior</MenuItem>
@@ -261,15 +282,25 @@ const CreateVacancy: React.FC = () => {
       </Stack>
 
       <Box mt={4}>
-        <Typography variant="h6" gutterBottom>
-          Resume Review Criteria
+        <Typography fontWeight={600} variant="h5" gutterBottom>
+          Критерии проверки резюме
+          <Tooltip
+            title="Укажите по шкале от 1 до 5 на какие критерии важно обратить внимание при анализе резюме"
+            placement="bottom"
+            arrow
+          >
+            <IconButton size="small">
+              <InfoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
         </Typography>
-        <Stack spacing={2} p={2} sx={{ border: "1px solid #ccc", borderRadius: 2 }}>
+        <Stack mt={3} spacing={2} >
           {[
-            { label: "accordance_xp_vacancy_score_threshold", field: "accordance_xp_vacancy_score_threshold" },
-            { label: "accordance_skill_vacancy_score_threshold", field: "accordance_skill_vacancy_score_threshold" },
-            { label: "Recommendation Weight", field: "recommendation_weight" },
-            { label: "Portfolio Weight", field: "portfolio_weight" },
+            { label: "Технические навыки", field: "accordance_skill_vacancy_score_threshold" },
+            { label: "Опыт работы", field: "accordance_xp_vacancy_score_threshold" },
+            { label: "Рекомендации", field: "recommendation_weight" },
+            { label: "Портфолио", field: "portfolio_weight" },
           ].map(({ label, field }) => (
             <SliderField
               key={field}
@@ -284,26 +315,26 @@ const CreateVacancy: React.FC = () => {
 
       <Box mt={4}>
         <Box display="flex" alignItems="center" onClick={() => setShowInterviewCriteria(!showInterviewCriteria)} sx={{ cursor: "pointer" }}>
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            Interview Evaluation Criteria Settings
+          <Typography variant="subtitle1" fontSize={16}>
+            Настройки критериев оценки интервью
           </Typography>
           <IconButton sx={{ transform: showInterviewCriteria ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }}>
             <ExpandMoreIcon />
           </IconButton>
         </Box>
         <Collapse in={showInterviewCriteria}>
-          <Box mt={2} p={2} sx={{ border: "1px solid #ccc", borderRadius: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Interview Evaluation Criteria
+          <Box mt={2}>
+            <Typography fontWeight={600} variant="h5" gutterBottom>
+              Критерии оценки интервью
             </Typography>
-            <Stack spacing={2}>
+            <Stack mt={3} spacing={2}>
               {[
-                { label: "Logic/Structure Score Weight", field: "logic_structure_score_weight" },
-                { label: "Soft Skill Score Weight", field: "soft_skill_score_weight" },
-                { label: "Hard Skill Score Weight", field: "hard_skill_score_weight" },
-                { label: "Accordance XP Resume Weight", field: "accordance_xp_resume_score_weight" },
-                { label: "Accordance Skill Resume Weight", field: "accordance_skill_resume_score_weight" },
-                { label: "Red Flag Score Weight", field: "red_flag_score_weight" },
+                { "label": "Оценка логической структуры ответов", "field": "logic_structure_score_weight" },
+                { "label": "Оценка софт-скиллов", "field": "soft_skill_score_weight" },
+                { "label": "Оценка хард-скиллов", "field": "hard_skill_score_weight" },
+                { "label": "Соответствие опыта в резюме кандидата", "field": "accordance_xp_resume_score_weight" },
+                { "label": "Соответствие навыков в резюме требованиям кандидата", "field": "accordance_skill_resume_score_weight" },
+                { "label": "Оценка красных флагов", "field": "red_flag_score_weight" }
               ].map(({ label, field }) => (
                 <SliderField
                   key={field}
@@ -324,9 +355,9 @@ const CreateVacancy: React.FC = () => {
         </Box>
       )}
 
-      <Box mt={4}>
+      <Box mt={4} mb={5}>
         <Button variant="contained" onClick={handleSubmit} fullWidth disabled={loading}>
-          {loading ? "Saving..." : "Save and go to interview questions"}
+          {loading ? "Сохранение..." : "Сохранить"}
         </Button>
       </Box>
     </Box>

@@ -7,7 +7,6 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import type { VacancyResponse } from "../types";
 import { useNavigate, useSearchParams } from "react-router";
@@ -26,6 +25,7 @@ useEffect(() => {
 const fetchVacancies = async () => {
   setLoading(true);
   try {
+    // throw ''
     const res = await axios.get<VacancyResponse[]>(
       "https://vtb-aihr.ru/api/vacancy/all"
     );
@@ -81,10 +81,27 @@ const fetchVacancies = async () => {
   }
 
   return (
-    <Box maxWidth="800px" mx="auto" p={3}>
-      <Typography align="center" variant="h5" gutterBottom>
-        All Vacancies
-      </Typography>
+    <Box maxWidth="560px" mx="auto" p={3}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mt={3}>
+        <div>
+      <Typography variant="subtitle2" fontWeight={600}>
+        {isRecruiter ? 'Ваши вакансии' : 'Доступные вам вакансии'}
+        </Typography>
+
+      <Typography mb={2} variant="h4" fontWeight={600} gutterBottom>
+        Список вакансий
+        </Typography>
+        </div>
+        {isRecruiter && (
+          <Button
+            size="large"
+            variant="contained"
+            onClick={() => navigate("/createVacancy")}
+          >
+            Новая вакансия
+          </Button>
+      )}
+      </Box>
       <Stack spacing={2}>
         {vacancies.map((vacancy) => (
           <VacancyPaper
@@ -95,17 +112,6 @@ const fetchVacancies = async () => {
           />
         ))}
       </Stack>
-      {isRecruiter && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/createVacancy")}
-          >
-            Add a new vacancy
-          </Button>
-        </Box>
-      )}
     </Box>
   );
 };
