@@ -19,24 +19,46 @@ const VacanciesList: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isRecruiter = searchParams.get('isRecruiter') === 'true';
+useEffect(() => {
+  fetchVacancies();
+}, []);
 
-  useEffect(() => {
-    fetchVacancies();
-  }, []);
+const fetchVacancies = async () => {
+  setLoading(true);
+  try {
+    const res = await axios.get<VacancyResponse[]>(
+      "https://vtb-aihr.ru/api/vacancy/all"
+    );
+    setVacancies(res.data);
+  } catch (err) {
+    console.error("Failed to fetch real vacancies, using mock data.", err);
 
-  const fetchVacancies = async () => {
-    try {
-      const res = await axios.get<VacancyResponse[]>(
-        "https://vtb-aihr.ru/api/vacancy/all"
-      );
-      setVacancies(res.data);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to fetch vacancies.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Mock data
+    const mockData: VacancyResponse[] = [
+      {
+        id: 1,
+        name: "Dungeon Master",
+        tags: ["boss of this gym", "dark", "deep"],
+        description: "Run the BDSM dungeon with authority and finesse.",
+        red_flags: "Requires strict obedience",
+        skill_lvl: "senior",
+      },
+      {
+        id: 2,
+        name: "Assistant Dungeon Keeper",
+        tags: ["deep", "300 bucks"],
+        description: "Assist the master in the dark and deep dungeon.",
+        red_flags: "Low tolerance for laziness",
+        skill_lvl: "middle",
+      },
+    ];
+
+    setVacancies(mockData);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this vacancy?")) return;

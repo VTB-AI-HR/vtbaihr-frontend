@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import type { VacancyResponse } from "../types";
 import { useNavigate } from "react-router";
 import "./vacancy.css";
@@ -43,6 +42,11 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
 
   return (
     <Paper elevation={2} sx={{ p: 2, position: "relative" }}>
+      <Typography style={{
+        textTransform: 'capitalize'
+      }} variant="subtitle1" color="primary">
+        {vacancy.skill_lvl}
+      </Typography>
       {isRecruiter === true && (
         <>
           <IconButton
@@ -50,19 +54,19 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
             sx={{ position: "absolute", top: 8, right: 8 }}
             onClick={handleDelete}
           >
-            <DeleteIcon color="error" fontSize="medium" />
+            <DeleteIcon fontSize="medium" />
           </IconButton>
           <IconButton
             size="small"
             sx={{ position: "absolute", top: 8, right: 48 }}
             onClick={handleEdit}
           >
-            <EditIcon color="primary" fontSize="medium" />
+            <EditIcon fontSize="medium" />
           </IconButton>
         </>
       )}
       <Typography variant="h6">{vacancy.name}</Typography>
-      <Stack className="tag-chip-container" direction="row" spacing={1} mt={1} flexWrap="wrap">
+      <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
         {vacancy.tags.map((tag) => (
           <Chip className="tag-chip" key={tag} label={tag} />
         ))}
@@ -78,8 +82,8 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
           </Button>
         )}
         {isRecruiter === true && (
-          <Button variant="contained" startIcon={<AssessmentIcon />} onClick={handleViewResults}>
-            Interview Results
+          <Button variant="contained" onClick={handleViewResults}>
+            Посмотреть отклики
           </Button>
         )}
       </Box>
