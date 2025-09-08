@@ -10,6 +10,8 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Box, IconButton, Paper } from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import theme from "./theme";
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import GroupIcon from '@mui/icons-material/Group';
 import LayersIcon from '@mui/icons-material/Layers';
@@ -50,30 +52,33 @@ export default function App() {
   const navigate = useNavigate();
 
   return (
-    <Box position="relative">
-      <Paper
-        elevation={3}
-        sx={{
-          position: "absolute",
-          top: 16,
-          right: 16,
-          p: 0.5,
-          zIndex: 10,
-          borderRadius: 2
-        }}
-      >
-        <IconButton onClick={() => navigate("/resumeScreening")} aria-label="Mass Resume Screening" sx={{ color: 'primary.main' }}>
-          <LayersIcon />
-        </IconButton>
-        <IconButton onClick={() => navigate("/vacancies?isRecruiter=true")} aria-label="Recruiter View" sx={{ color: 'primary.main' }}>
-          <BusinessCenterIcon />
-        </IconButton>
-        <IconButton onClick={() => navigate("/vacancies")} aria-label="Candidate View" sx={{ color: 'text.secondary' }}>
-          <GroupIcon />
-        </IconButton>
-      </Paper>
-      <Outlet />
-    </Box>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box position="relative">
+        <Paper
+          elevation={3}
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            p: 0.5,
+            zIndex: 10,
+            borderRadius: 2
+          }}
+        >
+          <IconButton onClick={() => navigate("/resumeScreening")} aria-label="Mass Resume Screening" sx={{ color: 'primary.main' }}>
+            <LayersIcon />
+          </IconButton>
+          <IconButton onClick={() => navigate("/vacancies?isRecruiter=true")} aria-label="Recruiter View" sx={{ color: 'primary.main' }}>
+            <BusinessCenterIcon />
+          </IconButton>
+          <IconButton onClick={() => navigate("/vacancies")} aria-label="Candidate View" sx={{ color: 'text.secondary' }}>
+            <GroupIcon />
+          </IconButton>
+        </Paper>
+        <Outlet />
+      </Box>
+    </ThemeProvider>
   );
 }
 

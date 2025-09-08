@@ -43,7 +43,6 @@ const InterviewApp = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const [interviewData, setInterviewData] = useState({
-    vacancyId: location.state?.vacancy_id,
     currentQuestionId: location.state?.question_id,
   });
 
@@ -60,13 +59,13 @@ const InterviewApp = () => {
 
   // Initial setup: check for required IDs and add a welcome message
   useEffect(() => {
-    if (!interviewId || !interviewData.vacancyId) {
+    if (!interviewId) {
       navigate("/");
       return;
     }
-    const initialMessage = location.state?.message || "Welcome to your interview. Press the play button to begin.";
+    const initialMessage = location.state?.message || "Добро пожаловать на собеседование. Нажмите кнопку воспроизведения, чтобы начать.";
     setMessages([{ type: 'bot', content: initialMessage }]);
-  }, [interviewId, interviewData.vacancyId, location.state?.message, navigate]);
+  }, [interviewId, location.state?.message, navigate]);
 
   const startInterview = async () => {
     setIsProcessing(true);
@@ -121,7 +120,6 @@ const InterviewApp = () => {
   const sendAudio = async (audioBlob: Blob) => {
     setIsProcessing(true);
     const formData = new FormData();
-    formData.append("vacancy_id", interviewData.vacancyId.toString());
     formData.append("question_id", interviewData.currentQuestionId.toString());
     formData.append("interview_id", interviewId === undefined ? "" : interviewId);
     formData.append("audio_file", audioBlob, "audio.webm");
