@@ -31,6 +31,7 @@ interface EvaluationResult {
 
 const ResumeScreeningPage: React.FC = () => {
   const { vacancy_id: urlVacancyId } = useParams<{ vacancy_id: string }>();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [vacancies, setVacancies] = useState<VacancyResponse[]>([]);
@@ -38,93 +39,75 @@ const ResumeScreeningPage: React.FC = () => {
     urlVacancyId || ""
   );
   const [files, setFiles] = useState<File[]>([]);
-  const [evaluationResults, setEvaluationResults] = useState<
-    EvaluationResult[] | null
-  >(null);
+  const [evaluationResults, setEvaluationResults] = useState<EvaluationResult[]>(
+    []
+  );
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [openModal, setOpenModal] = useState(false);
-  const [modalContent, setModalContent] = useState<{
-    passed: number;
-    failed: number;
-  } | null>(null);
+  const [passed, setPassed] = useState(0);
+  const [failed, setFailed] = useState(0);
 
   useEffect(() => {
-    fetchVacancies();
-  }, []);
-
-  const fetchVacancies = async () => {
-    try {
-      const res = await axios.get<VacancyResponse[]>(
-        "https://vtb-aihr.ru/api/vacancy/all"
-      );
-      setVacancies(res.data);
-      if (urlVacancyId && res.data.some((v) => v.id === +urlVacancyId)) {
-        setSelectedVacancyId(+urlVacancyId);
+    const fetchVacancies = async () => {
+      try {
+        const res = await axios.get<VacancyResponse[]>(
+          "https://vtb-aihr.ru/api/vacancy/all"
+        );
+        setVacancies(res.data);
+        if (urlVacancyId && res.data.some((v) => v.id === +urlVacancyId)) {
+          setSelectedVacancyId(+urlVacancyId);
+        }
+      } catch (err) {
+        setError("Failed to fetch vacancies.");
+        console.error("Failed to fetch vacancies:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError("Failed to fetch vacancies.");
-      console.error("Failed to fetch vacancies:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchVacancies();
+  }, [urlVacancyId]);
 
   const handleFileChange = (newFiles: FileList | null) => {
-    if (newFiles) {
-      const allowedTypes = [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/msword",
-        "text/plain",
-        "application/rtf",
-      ];
-      const validFiles = Array.from(newFiles).filter((file) =>
-        allowedTypes.includes(file.type)
-      );
-      setFiles(validFiles);
-      setEvaluationResults(null);
-    }
+    if (!newFiles) return;
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
+      "text/plain",
+      "application/rtf",
+    ];
+    const validFiles = Array.from(newFiles).filter((file) =>
+      allowedTypes.includes(file.type)
+    );
+    setFiles(validFiles);
+    setEvaluationResults([]);
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    handleFileChange(e.dataTransfer.files);
-  };
   const handleEvaluate = async () => {
-    if (files.length === 0 || !selectedVacancyId) {
-      return;
-    }
+    if (files.length === 0 || !selectedVacancyId) return;
 
     const formData = new FormData();
     formData.append("vacancy_id", selectedVacancyId.toString());
-    files.forEach((file) => {
-      formData.append("candidate_resume_files", file);
-    });
+    files.forEach((file) => formData.append("candidate_resume_files", file));
 
     try {
       setLoading(true);
       const res = await axios.post<{ evaluation_resumes: EvaluationResult[] }>(
         "https://vtb-aihr.ru/api/vacancy/evaluate-resumes",
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-      const passed = res.data.evaluation_resumes.filter(
-        (result) =>
-          result.accordance_xp_vacancy_score >= 3 &&
-          result.accordance_skill_vacancy_score >= 3
-      ).length;
-      const failed = res.data.evaluation_resumes.length - passed;
 
-      setModalContent({ passed, failed });
+      const successful = res.data.evaluation_resumes;
+      setEvaluationResults(successful);
+
+      const passedCount = successful.length;
+      const failedCount = files.length - passedCount;
+
+      setPassed(passedCount);
+      setFailed(failedCount);
       setOpenModal(true);
     } catch (err) {
       setError("Failed to evaluate resumes.");
@@ -137,7 +120,7 @@ const ResumeScreeningPage: React.FC = () => {
   const handleDone = () => {
     setOpenModal(false);
     setFiles([]);
-    setEvaluationResults(null);
+    setEvaluationResults([]);
   };
 
   const selectedVacancyTitle = vacancies.find(
@@ -197,12 +180,13 @@ const ResumeScreeningPage: React.FC = () => {
           cursor: "pointer",
           borderStyle: "dashed",
           borderColor: "grey.400",
-          "&:hover": {
-            borderColor: "primary.main",
-          },
+          "&:hover": { borderColor: "primary.main" },
         }}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          handleFileChange(e.dataTransfer.files);
+        }}
         onClick={() => fileInputRef.current?.click()}
       >
         <input
@@ -222,7 +206,7 @@ const ResumeScreeningPage: React.FC = () => {
       </Paper>
 
       <Box mt={2}>
-        {evaluationResults ? (
+        {evaluationResults.length > 0 ? (
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -273,45 +257,44 @@ const ResumeScreeningPage: React.FC = () => {
       >
         Start Resume Screening
       </Button>
-      {modalContent && (
-        <Modal open={openModal} onClose={handleDone}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 400,
-              bgcolor: "background.paper",
-              border: "2px solid #000",
-              boxShadow: 24,
-              p: 4,
-              textAlign: "center",
-            }}
-          >
-            <Typography variant="h6" component="h2" gutterBottom>
-              Screening results
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2 }}>
-              <Paper elevation={1} sx={{ p: 2, flexGrow: 1, mr: 1 }}>
-                <Typography variant="subtitle1">Passed</Typography>
-                <Typography variant="h4">{modalContent.passed}</Typography>
-              </Paper>
-              <Paper elevation={1} sx={{ p: 2, flexGrow: 1, ml: 1 }}>
-                <Typography variant="subtitle1">Failed</Typography>
-                <Typography variant="h4">{modalContent.failed}</Typography>
-              </Paper>
-            </Box>
-            <Typography variant="body2" sx={{ my: 2 }}>
-              Всем успешно прошедшим проверку кандидатам было отправлено
-              приглашение на прохождение интервью
-            </Typography>
-            <Button variant="contained" onClick={handleDone}>
-              Done
-            </Button>
+
+      <Modal open={openModal} onClose={handleDone}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Screening results
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2 }}>
+            <Paper elevation={1} sx={{ p: 2, flexGrow: 1, mr: 1 }}>
+              <Typography variant="subtitle1">Passed</Typography>
+              <Typography variant="h4">{passed}</Typography>
+            </Paper>
+            <Paper elevation={1} sx={{ p: 2, flexGrow: 1, ml: 1 }}>
+              <Typography variant="subtitle1">Failed</Typography>
+              <Typography variant="h4">{failed}</Typography>
+            </Paper>
           </Box>
-        </Modal>
-      )}
+          <Typography variant="body2" sx={{ my: 2 }}>
+            Всем успешно прошедшим проверку кандидатам было отправлено приглашение
+            на прохождение интервью
+          </Typography>
+          <Button variant="contained" onClick={handleDone}>
+            Done
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 };
