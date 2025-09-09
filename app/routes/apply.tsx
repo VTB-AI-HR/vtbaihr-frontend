@@ -13,7 +13,7 @@ import {
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import axios from "axios";
 import type { VacancyResponse } from "../types";
-import {  useParams } from "react-router";
+import { useParams } from "react-router";
 import VacancyPaper from "./vacancyCard";
 import Back from "./back";
 
@@ -67,14 +67,19 @@ const ApplyVacancy: React.FC = () => {
       });
 
       const data = res.data;
-      const passed = data.accordance_xp_vacancy_score >= 3 && data.accordance_skill_vacancy_score >= 3;
+      const passed =
+        data.accordance_xp_vacancy_score >= 3 &&
+        data.accordance_skill_vacancy_score >= 3;
 
       setResult({
         success: passed,
         message: passed
           ? "Нам понравилось ваше резюме, и мы рады пригласить вас пройти интервью. Скопируйте ссылку ниже и перейдите по ней, чтобы начать интервью"
-          : "К сожалению, мы пока не готовы пригласить вас на интервью",
-        interviewLink: passed ? `https://vtb-aihr.ru/vacancy/${vacancy?.id}/interview/` + data.interview_link.split('/').at(-1) : undefined,
+          : data.message_to_candidate || "К сожалению, мы пока не готовы пригласить вас на интервью",
+        interviewLink: passed
+          ? `https://vtb-aihr.ru/vacancy/${vacancy?.id}/interview/` +
+          data.interview_link.split("/").at(-1)
+          : undefined,
       });
     } catch (err) {
       console.error(err);
@@ -83,6 +88,7 @@ const ApplyVacancy: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -112,9 +118,9 @@ const ApplyVacancy: React.FC = () => {
         <Box mb={4}>
           <VacancyPaper vacancy={vacancy} onDelete={() => { }} />
         </Box>
-      <Typography variant="h6" fontSize={24} fontWeight={600} gutterBottom>
-        Отклик
-      </Typography>
+        <Typography variant="h6" fontSize={24} fontWeight={600} gutterBottom>
+          Отклик
+        </Typography>
 
         <Paper
           elevation={3}
@@ -129,8 +135,8 @@ const ApplyVacancy: React.FC = () => {
 
 
         </Paper >
-          {result.success && result.interviewLink && (
-            <>
+        {result.success && result.interviewLink && (
+          <>
             <TextField
               fullWidth
               value={result.interviewLink}
@@ -140,19 +146,19 @@ const ApplyVacancy: React.FC = () => {
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => navigator.clipboard.writeText(result.interviewLink!)}
-                      >
+                    >
                       <FileCopyIcon />
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              />
-          <Typography style={{ marginTop: -4 }} color="#778093" variant="caption">
-            Пройти интервью можно только один раз
-          </Typography>
-              </>
+            />
+            <Typography style={{ marginTop: -4 }} color="#778093" variant="caption">
+              Пройти интервью можно только один раз
+            </Typography>
+          </>
 
-          )}
+        )}
       </Box>
     );
   }
