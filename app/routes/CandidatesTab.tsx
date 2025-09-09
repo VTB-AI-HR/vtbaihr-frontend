@@ -107,7 +107,7 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
               <TableCell>Кандидат</TableCell>
               <TableCell>Почта и Телефон</TableCell>
               <TableCell>Оценка резюме</TableCell>
-              <TableCell>Interview Assessment</TableCell>
+              <TableCell>Оценка интервью</TableCell>
               <TableCell>Статус</TableCell>
               <TableCell>Действие</TableCell>
             </TableRow>
