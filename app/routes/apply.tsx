@@ -182,7 +182,7 @@ const ApplyVacancy: React.FC = () => {
           <Stack direction="row" spacing={1} alignItems="center">
             <TextField
               fullWidth
-              label="Resume"
+              label="Файл с резюме"
               disabled
               value={resumeFile?.name || ""}
               InputProps={{ readOnly: true }}
