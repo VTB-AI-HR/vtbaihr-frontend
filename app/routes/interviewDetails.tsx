@@ -393,9 +393,9 @@ const InterviewDetailsPage: React.FC = () => {
           )}
 
           <Typography variant="h6" fontWeight="bold" mb={1}>
-            Транскрипт интервью
+            Транскрипция интервью
           </Typography>
-          <Box
+          <Paper
             sx={{
               maxHeight: "400px",
               overflowY: "auto",
@@ -443,7 +443,7 @@ const InterviewDetailsPage: React.FC = () => {
                 </Box>
               </Box>
             ))}
-          </Box>
+          </Paper>
         </>
       )}
     </Box>
