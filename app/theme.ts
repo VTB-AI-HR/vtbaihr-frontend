@@ -96,10 +96,39 @@ const theme = createTheme({
         },
       },
     },
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+          border: "none",
+          borderRadius: "15px",
+        },
+        grouped: {
+          border: "none",
+          textTransform: "none",
+          borderRadius: "15px",
+          "&.Mui-selected": {
+            backgroundColor: "#3361EC",
+            color: "#ffffff",
+            "&:hover": {
+              backgroundColor: "#2549C5",
+            },
+          },
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "#F4F8FB",
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: "none",
+          borderRadius: "8px",
         },
         containedPrimary: {
           backgroundColor: "#3361EC",

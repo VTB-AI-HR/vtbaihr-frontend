@@ -86,7 +86,7 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
             <Button
               size="medium"
               variant="contained" onClick={handleViewResults}>
-              Посмотреть отклики (кол-во)
+              Посмотреть отклики
             </Button>
           )}
         </Box>

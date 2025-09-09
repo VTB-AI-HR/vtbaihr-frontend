@@ -145,13 +145,15 @@ const ResumeScreeningPage: React.FC = () => {
 
   return (
     <Box maxWidth="800px" mx="auto" p={3}>
-      <Typography variant="h5" gutterBottom align="center">
-        Resume Screening
+      <Typography variant="subtitle2" fontWeight={600}>
+        Первичная проверка кандидата
       </Typography>
-
+      <Typography mb={2} variant="h4" fontWeight={600} gutterBottom>
+        Проверка резюме
+      </Typography>
       {!urlVacancyId && (
         <FormControl fullWidth sx={{ mb: 3 }}>
-          <InputLabel>Select Vacancy</InputLabel>
+          <InputLabel>Вакансия</InputLabel>
           <Select
             value={selectedVacancyId}
             label="Select Vacancy"
@@ -198,7 +200,7 @@ const ResumeScreeningPage: React.FC = () => {
           ref={fileInputRef}
         />
         <Typography variant="body1">
-          Drag 'n' drop some files here, or click to select files.
+          Добавьте файлы резюме кандидатов здесь или нажмите, чтобы выбрать
         </Typography>
         <Typography variant="caption" color="text.secondary">
           (Supported formats: PDF, DOCX, DOC, TXT, RTF)

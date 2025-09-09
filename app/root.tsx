@@ -141,7 +141,7 @@ export default function App() {
           <IconButton onClick={() => navigate("/vacancies?isRecruiter=true")} aria-label="Recruiter View" sx={{ color: 'primary.main' }}>
             <BusinessCenterIcon />
           </IconButton>
-          <IconButton onClick={() => navigate("/vacancies")} aria-label="Candidate View" sx={{ color: 'text.secondary' }}>
+          <IconButton onClick={() => navigate("/vacancies")} aria-label="Candidate View" sx={{ color: 'primary.main' }}>
             <GroupIcon />
           </IconButton>
         </Paper>

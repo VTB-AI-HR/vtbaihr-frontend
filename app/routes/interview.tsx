@@ -47,7 +47,6 @@ export interface StartInterviewResponse {
   message_to_candidate: string;
   total_question: number;
   question_id: number;
-  vacancy_id: number;
   llm_audio_filename: string;
   llm_audio_fid: string;
 }
@@ -110,7 +109,7 @@ const CountdownTimer = ({
 
 // ---------------- Component ----------------
 const InterviewApp = () => {
-  const { interviewId } = useParams<{ interviewId: string }>();
+  const { interview_id, vacancy_id } = useParams<{ interview_id: string, vacancy_id: string }>();
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -138,7 +137,7 @@ const InterviewApp = () => {
     setMessages([{ type: "bot", text: welcomeMessage, style: 'normal' }]);
   }, []);
 
-  const fetchCurrentQuestionTime = useCallback(async (vacancy_id: number) => {
+  const fetchCurrentQuestionTime = useCallback(async () => {
     try {
       const res = await fetch(`https://vtb-aihr.ru/api/vacancy/question/all/${vacancy_id}`);
       if (!res.ok) throw new Error("Failed to fetch questions");
@@ -155,7 +154,7 @@ const InterviewApp = () => {
   const startInterview = async () => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`https://vtb-aihr.ru/api/vacancy/interview/start/${interviewId}`, { method: "POST" });
+      const res = await fetch(`https://vtb-aihr.ru/api/vacancy/interview/start/${interview_id}`, { method: "POST" });
       if (!res.ok) throw new Error("Failed to start interview");
       const data: StartInterviewResponse = await res.json();
       setInterviewState(data);
@@ -167,7 +166,7 @@ const InterviewApp = () => {
           audioUrl: data.llm_audio_fid ? `https://vtb-aihr.ru/api/vacancy/interview/audio/${data.llm_audio_fid}/${data.llm_audio_filename}` : undefined,
         },
       ]);
-      fetchCurrentQuestionTime(data.vacancy_id);
+      fetchCurrentQuestionTime();
     } catch (err) {
       console.error(err);
       setMessages((prev) => [...prev, { type: "bot", text: "Failed to start the interview. Please try again." }]);
@@ -214,7 +213,7 @@ const InterviewApp = () => {
     setIsProcessing(true);
     const formData = new FormData();
     formData.append("question_id", String(interviewState?.question_id || ""));
-    formData.append("interview_id", interviewId || "");
+    formData.append("interview_id", interview_id || "");
     formData.append("audio_file", audioBlob, "audio.webm");
 
     try {
@@ -249,7 +248,7 @@ const InterviewApp = () => {
             audioUrl: data.llm_audio_fid ? `https://vtb-aihr.ru/api/vacancy/interview/audio/${data.llm_audio_fid}/${data.llm_audio_filename}` : undefined,
           },
         ]);
-        if (interviewState?.vacancy_id) fetchCurrentQuestionTime(interviewState.vacancy_id);
+        if (vacancy_id) fetchCurrentQuestionTime();
       }
     } catch (err) {
       console.error(err);

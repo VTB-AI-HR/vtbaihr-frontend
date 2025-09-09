@@ -19,7 +19,6 @@ import Back from "../components/back";
 
 const ApplyVacancy: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [vacancy, setVacancy] = useState<VacancyResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,8 +73,8 @@ const ApplyVacancy: React.FC = () => {
         success: passed,
         message: passed
           ? "Нам понравилось ваше резюме, и мы рады пригласить вас пройти интервью. Скопируйте ссылку ниже и перейдите по ней, чтобы начать интервью"
-          : "К сожалению, ваше резюме не соответствует требованиям вакансии. Спасибо за отклик.",
-        interviewLink: passed ? 'https://vtb-aihr.ru/interview/' + data.interview_link.split('/').at(-1) : undefined,
+          : "К сожалению, мы пока не готова пригласить вас на интервью",
+        interviewLink: passed ? `https://vtb-aihr.ru/vacancy/${vacancy?.id}/interview/` + data.interview_link.split('/').at(-1) : undefined,
       });
     } catch (err) {
       console.error(err);
@@ -154,18 +153,6 @@ const ApplyVacancy: React.FC = () => {
               </>
 
           )}
-
-        {!result.success && (
-          <Button
-            fullWidth
-            size="medium"
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={() => navigate("/vacancies")}
-          >
-            К вакансиям
-          </Button>
-        )}
       </Box>
     );
   }

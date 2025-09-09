@@ -11,13 +11,18 @@ import {
   ListItem,
   ListItemText,
   Paper,
-  Divider,
   ToggleButtonGroup,
   ToggleButton,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { Edit, Delete, AutoAwesome as AutoAwesomeIcon } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
+import Back from "../components/back";
 
 interface Question {
   id?: number;
@@ -140,120 +145,135 @@ const QuestionsPage: React.FC = () => {
   };
 
   return (
-    <Stack direction="row" spacing={3} p={3} sx={{ height: "calc(100vh - 64px)" }}>
-      {/* Left side: Question Creation */}
-      <Paper elevation={3} sx={{ p: 3, flex: 1, overflowY: "auto" }}>
-        <Typography variant="h5" gutterBottom align="center">
-          Question Creation
+    <Stack direction="row" justifyContent='center' spacing={3} p={3} sx={{ height: "calc(100vh - 64px)" }}>
+      <div style={{ flex: 1, maxWidth: 560 }}>
+        <Back />
+        <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
+          Создание вопросов
         </Typography>
         <ToggleButtonGroup
           value={mode}
           exclusive
           onChange={(_, newMode) => newMode && setMode(newMode)}
-          sx={{ width: "100%", mb: 2 }}
+          sx={{ width: "100%", mb: 4 }}
         >
           <ToggleButton value="generate" sx={{ flex: 1 }}>
-            <AutoAwesomeIcon sx={{ mr: 1 }} /> Generate
+            Сгенерировать <AutoAwesomeIcon sx={{ ml: 1 }} />
           </ToggleButton>
           <ToggleButton value="manual" sx={{ flex: 1 }}>
-            Write Manually
+            Создать вручную
           </ToggleButton>
         </ToggleButtonGroup>
-        <Divider sx={{ my: 2 }} />
-
         {mode === "manual" ? (
           <Stack spacing={2}>
             <TextField
-              label="Question"
+              label="Вопрос"
               value={newQuestion.question}
               onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
             />
             <TextField
-              label="Hint for Evaluation"
+              label="На что обратить внимание"
               value={newQuestion.hint_for_evaluation}
               onChange={(e) => setNewQuestion({ ...newQuestion, hint_for_evaluation: e.target.value })}
             />
+            <Stack direction={"row"} spacing={2}>
+              <TextField
+                select
+                fullWidth
+                label="Вес"
+                value={newQuestion.weight}
+                onChange={(e) =>
+                  setNewQuestion({ ...newQuestion, weight: Number(e.target.value) })
+                }
+              >
+                {Array.from({ length: 6 }, (_, i) => (
+                  <MenuItem key={i} value={i}>
+                    {i}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                fullWidth
+                select
+                label="Type"
+                value={newQuestion.question_type}
+                onChange={(e) => setNewQuestion({ ...newQuestion, question_type: e.target.value })}
+              >
+                <MenuItem value="soft">Soft</MenuItem>
+                <MenuItem value="hard">Hard</MenuItem>
+              </TextField>
+            </Stack>
             <TextField
               type="number"
-              label="Weight"
-              value={newQuestion.weight}
-              onChange={(e) => setNewQuestion({ ...newQuestion, weight: Number(e.target.value) })}
-            />
-            <TextField
-              type="number"
-              label="Response Time (seconds)"
+              label="Время на один ответ (минуты)"
               value={newQuestion.response_time}
               onChange={(e) => setNewQuestion({ ...newQuestion, response_time: Number(e.target.value) })}
             />
-            <TextField
-              select
-              label="Type"
-              value={newQuestion.question_type}
-              onChange={(e) => setNewQuestion({ ...newQuestion, question_type: e.target.value })}
-            >
-              <MenuItem value="soft">Soft</MenuItem>
-              <MenuItem value="hard">Hard</MenuItem>
-            </TextField>
-            <Button variant="contained" onClick={handleAddManual}>
-              Create
-            </Button>
           </Stack>
         ) : (
-          <Stack spacing={2}>
-            <TextField
-              select
-              label="Question Type"
-              value={genType}
-              onChange={(e) => setGenType(e.target.value)}
-            >
-              <MenuItem value="soft">Soft</MenuItem>
-              <MenuItem value="hard">Hard</MenuItem>
-            </TextField>
-            <TextField
-              type="number"
-              label="Count"
-              value={genCount}
-              onChange={(e) => setGenCount(Number(e.target.value))}
-            />
-            <Button variant="contained" onClick={handleGenerate}>
-              Create
-            </Button>
-          </Stack>
+          <>
+            <Stack spacing={2} direction={"column"}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Количество"
+                value={genCount}
+                onChange={(e) => setGenCount(Number(e.target.value))}
+              />
+              <TextField
+                fullWidth
+                select
+                label="Что проверяем"
+                value={genType}
+                onChange={(e) => setGenType(e.target.value)}
+              >
+                <MenuItem value="soft">Soft</MenuItem>
+                <MenuItem value="hard">Hard</MenuItem>
+              </TextField>
+            </Stack>
+          </>
         )}
-        <Button
-          fullWidth
-          variant="outlined"
-          sx={{ mt: 2 }}
-          onClick={() => navigate("/vacancies?isRecruiter=true")}
-        >
-          Finish
-        </Button>
-      </Paper>
+        <Stack direction="row" spacing={2} alignItems="center" mt={2}>
+          <Button size="large" fullWidth variant="contained" onClick={mode === 'manual' ? handleAddManual : handleGenerate}>
+            {mode === 'manual' ? 'Создать' : 'Сгенерировать'}
+          </Button>
+          <Button
+            fullWidth
+            size="large"
+            variant="outlined"
+            onClick={() => navigate("/vacancies?isRecruiter=true")}
+          >
+            Сохранить и выйти
+          </Button>
+        </Stack>
+      </div>
 
       {/* Right side: Questions List */}
-      <Paper elevation={3} sx={{ p: 3, flex: 1, overflowY: "auto" }}>
-        <Typography variant="h5" gutterBottom align="center">
-          Questions ({questions.length})
+      <div style={{ flex: 1, maxWidth: 560 }}>
+        <Typography mt={5} mb={4} variant="h5" fontWeight={600} gutterBottom>
+          Вопросы ({questions.length})
         </Typography>
-        <Divider sx={{ my: 2 }} />
-        {questions.length === 0 ? (
-          <Box p={4} textAlign="center" color="text.secondary">
-            <Typography variant="h6">No questions yet</Typography>
-            <Typography>Start by creating some!</Typography>
-          </Box>
-        ) : (
-          <List>
-            {questions.map((q) => (
-              <QuestionListItem
-                key={q.id ?? q.question}
-                q={q}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-              />
-            ))}
-          </List>
-        )}
-      </Paper>
+        <div style={{ overflowY: "auto", height: "calc(100vh - 250px)", paddingRight: 8 }}>
+
+          {questions.length === 0 ? (
+            <Paper>
+              <Typography variant="h6">Создайте первый вопрос, он появится здесь</Typography>
+            </Paper>
+          ) : (
+            <List>
+              {questions.map((q) => (
+                <QuestionListItem
+                  key={q.id ?? q.question}
+                  q={q}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                />
+              ))}
+            </List>
+          )}
+        </div>
+      </div>
     </Stack>
   );
 };
@@ -265,76 +285,99 @@ function QuestionListItem({ q, handleEdit, handleDelete }: {
   handleEdit: (q: Question) => Promise<void>;
   handleDelete: (id: number) => Promise<void>;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [open, setOpen] = useState(false);
   const [editData, setEditData] = useState<Question>(q);
 
   const saveEdit = async () => {
     await handleEdit(editData);
-    setIsEditing(false);
+    setOpen(false);
   };
 
   return (
-    <ListItem
-      alignItems="flex-start"
-      sx={{ border: "1px solid #e0e0e0", borderRadius: 1, mb: 1 }}
-      secondaryAction={
-        <Stack direction="row" spacing={1}>
-          {!isEditing &&
-            <IconButton onClick={() => setIsEditing(true)}>
-              <Edit />
-            </IconButton>
+    <>
+      <ListItem
+        alignItems="flex-start"
+        sx={{ backgroundColor: 'white', borderRadius: 2, mb: 3 }}
+      >
+        <ListItemText
+          primary={`${q.question} (${q.question_type}, weight: ${q.weight})`}
+          secondary={
+            <>
+              Подсказка: {q.hint_for_evaluation}, Response Time: {q.response_time} мин
+              <Stack direction="row" mt={2} flexWrap="wrap">
+                <Chip label={'Навык ' + q.question_type} />
+                <Chip label={'Вес: ' + q.weight} />
+                <Chip label={q.response_time + ' мин'} />
+              </Stack>
+            </>
           }
-          {q.id && !isEditing && (
+        />
+        <Stack direction="row">
+          <IconButton onClick={() => { setEditData(q); setOpen(true); }}>
+            <Edit />
+          </IconButton>
+          {q.id && (
             <IconButton onClick={() => handleDelete(q.id!)}>
               <Delete />
             </IconButton>
           )}
         </Stack>
-      }
-    >
-      {isEditing ? (
-        <Stack spacing={1} width="100%">
-          <TextField
-            label="Question"
-            value={editData.question}
-            onChange={(e) => setEditData({ ...editData, question: e.target.value })}
-          />
-          <TextField
-            label="Hint"
-            value={editData.hint_for_evaluation}
-            onChange={(e) => setEditData({ ...editData, hint_for_evaluation: e.target.value })}
-          />
-          <TextField
-            type="number"
-            label="Weight"
-            value={editData.weight}
-            onChange={(e) => setEditData({ ...editData, weight: Number(e.target.value) })}
-          />
-          <TextField
-            type="number"
-            label="Response Time (seconds)"
-            value={editData.response_time}
-            onChange={(e) => setEditData({ ...editData, response_time: Number(e.target.value) })}
-          />
-          <TextField
-            select
-            label="Type"
-            value={editData.question_type}
-            onChange={(e) => setEditData({ ...editData, question_type: e.target.value })}
-          >
-            <MenuItem value="soft">Soft</MenuItem>
-            <MenuItem value="hard">Hard</MenuItem>
-          </TextField>
-          <Button variant="contained" size="small" onClick={saveEdit}>
-            Save
-          </Button>
-        </Stack>
-      ) : (
-        <ListItemText
-          primary={`${q.question} (${q.question_type}, weight: ${q.weight})`}
-          secondary={`Hint: ${q.hint_for_evaluation}, Response Time: ${q.response_time}s`}
-        />
-      )}
-    </ListItem>
+      </ListItem>
+
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Редактировать вопрос</DialogTitle>
+        <DialogContent
+        >
+          <Stack spacing={2} mt={1}>
+            <TextField
+              label="Вопрос"
+              value={editData.question}
+              onChange={(e) => setEditData({ ...editData, question: e.target.value })}
+              fullWidth
+            />
+            <TextField
+              label="На что обратить внимание"
+              value={editData.hint_for_evaluation}
+              onChange={(e) => setEditData({ ...editData, hint_for_evaluation: e.target.value })}
+              fullWidth
+            />
+            <Stack direction="row" spacing={2}>
+              <TextField
+                select
+                fullWidth
+                label="Вес"
+                value={editData.weight}
+                onChange={(e) => setEditData({ ...editData, weight: Number(e.target.value) })}
+              >
+                {Array.from({ length: 6 }, (_, i) => (
+                  <MenuItem key={i} value={i}>{i}</MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                select
+                fullWidth
+                label="Type"
+                value={editData.question_type}
+                onChange={(e) => setEditData({ ...editData, question_type: e.target.value })}
+              >
+                <MenuItem value="soft">Soft</MenuItem>
+                <MenuItem value="hard">Hard</MenuItem>
+              </TextField>
+            </Stack>
+            <TextField
+              type="number"
+              label="Время на один ответ (минуты)"
+              value={editData.response_time}
+              onChange={(e) => setEditData({ ...editData, response_time: Number(e.target.value) })}
+              fullWidth
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" fullWidth onClick={saveEdit}>Сохранить</Button>
+          <Button fullWidth onClick={() => setOpen(false)}>Назад</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
