@@ -64,11 +64,11 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ vacancyId }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Question</TableCell>
-              <TableCell>Evaluation Hint</TableCell>
-              <TableCell>Weight</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Response Time</TableCell>
+              <TableCell>Вопрос</TableCell>
+              <TableCell>Подсказка проверки</TableCell>
+              <TableCell>Веса</TableCell>
+              <TableCell>Типа</TableCell>
+              <TableCell>Время на ответ</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,7 +78,7 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ vacancyId }) => {
                 <TableCell>{q.hint_for_evaluation}</TableCell>
                 <TableCell>{q.weight}</TableCell>
                 <TableCell>{q.question_type}</TableCell>
-                <TableCell>{q.response_time}</TableCell>
+                <TableCell>{q.response_time} мин</TableCell>
               </TableRow>
             ))}
           </TableBody>

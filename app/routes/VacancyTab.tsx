@@ -11,23 +11,23 @@ const VacancyTab: React.FC<VacancyTabProps> = ({ vacancy }) => {
     <Box>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
-          Description
+          Описание
         </Typography>
         <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
           {vacancy.description}
         </Typography>
         <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>
-          Red Flags
+          Красные флаги
         </Typography>
         <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
           {vacancy.red_flags}
         </Typography>
         <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>
-          Skill Level
+          Грейд
         </Typography>
         <Typography variant="body1">{vacancy.skill_lvl}</Typography>
         <Typography variant="h6" sx={{ mt: 3 }} gutterBottom>
-          Tags
+          Тэги
         </Typography>
         <Typography variant="body1">{vacancy.tags.join(", ")}</Typography>
       </Paper>

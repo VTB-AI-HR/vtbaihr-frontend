@@ -12,19 +12,36 @@ import {
   ToggleButtonGroup,
   Chip,
   Grid,
+  ListItemText,
 } from "@mui/material";
 import axios from "axios";
+import Back from "./back";
 
 interface InterviewData {
   id: number;
   vacancy_id: number;
   candidate_email: string;
-  general_result: string;
+  candidate_phone: string;
+  candidate_name: string;
+  candidate_telegram_login: string;
+  candidate_resume_fid: string;
+  candidate_resume_filename: string;
+  accordance_xp_vacancy_score: number;
+  accordance_skill_vacancy_score: number;
+  red_flag_score: number;
+  hard_skill_score: number;
+  soft_skill_score: number;
+  logic_structure_score: number;
+  accordance_xp_resume_score: number;
+  accordance_skill_resume_score: number;
   strong_areas: string;
   weak_areas: string;
   approved_skills: string[];
-  message_to_hr: string;
+  general_score: number;
+  general_result: string;
   message_to_candidate: string;
+  message_to_hr: string;
+  created_at: string;
 }
 
 interface InterviewDetails {
@@ -146,10 +163,6 @@ const InterviewDetailsPage: React.FC = () => {
     );
   }
 
-  const resultColor =
-    generalData.general_result === "passed" ? "green" : "red";
-  const candidateInfo =
-    generalData.candidate_email || "Candidate";
   const currentAnswer = detailsData.candidate_answers.find(
     (answer) => answer.question_id === selectedQuestion
   );
@@ -161,22 +174,47 @@ const InterviewDetailsPage: React.FC = () => {
   );
 
   return (
-    <Box maxWidth="900px" mx="auto" p={3}>
+    <Box maxWidth="1200px" mx="auto" p={3}>
+      <Back />
+      {generalData.general_result && (
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          sx={{
+            fontWeight: '500',
+            fontSize: 18,
+            color: (() => {
+              switch (generalData.general_result) {
+                case "next":
+                  return "green";
+                case "rejected":
+                  return "red";
+                default:
+                  return "orange";
+              }
+            })(),
+          }}
+        >
+          {(() => {
+            switch (generalData.general_result) {
+              case "next":
+                return "Интервью пройдено";
+              case "rejected":
+                return "Кандидат не прошел";
+              case "in_process":
+                return "Интервью в прогрессе";
+              case "disputable":
+                return "Спорный результат";
+              default:
+                return generalData.general_result;
+            }
+          })()}
+        </Typography>
+      )}
       <Grid container alignItems="center" justifyContent="space-between" mb={3}>
-        {/* <Grid item> */}
           <Typography variant="h4" fontWeight="bold">
-            Interview
+            {generalData.candidate_name || generalData.candidate_email}
           </Typography>
-          <Typography variant="body1" color={resultColor}>
-            {generalData.general_result}
-          </Typography>
-          <Typography variant="body1">{candidateInfo}</Typography>
-        {/* </Grid> */}
-        {/* <Grid item> */}
-          <Button variant="contained" disabled>
-            Schedule Interview
-          </Button>
-        {/* </Grid> */}
       </Grid>
       <ToggleButtonGroup
         value={view}
@@ -184,29 +222,43 @@ const InterviewDetailsPage: React.FC = () => {
         onChange={handleViewChange}
         sx={{ mb: 3 }}
       >
-        <ToggleButton value="result">Interview Result</ToggleButton>
-        <ToggleButton value="answers">Answers</ToggleButton>
+        <ToggleButton value="result">Результат интервью</ToggleButton>
+        <ToggleButton value="answers">Ответы на вопросы</ToggleButton>
       </ToggleButtonGroup>
 
       {view === "result" && (
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-          <Grid container alignItems="center" justifyContent="space-between" mb={2}>
-              <Typography variant="h6" fontWeight="bold">Result</Typography>
-              <Button variant="outlined" disabled>
-                Download Result
-              </Button>
+        <>
+          <Grid container alignItems="center" justifyContent="space-between" mb={2} mt={2}>
+              <Typography variant="h6" fontWeight="bold">Отчёт</Typography>
 
+            <Button
+              variant="contained"
+              onClick={() => {
+                if (generalData?.candidate_resume_fid && generalData?.candidate_resume_filename) {
+                  const url = `https://vtb-aihr.ru/api/vacancy/interview/resume/${generalData.candidate_resume_fid}/${generalData.candidate_resume_filename}`;
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.setAttribute("download", generalData.candidate_resume_filename);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }
+              }}
+            >
+              Скачать резюме
+            </Button>
           </Grid>
+        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
           <Stack spacing={2}>
             <Box>
               <Typography variant="subtitle1" fontWeight="bold">
-                Strong Areas
+                Сильные стороны
               </Typography>
               <Typography>{generalData.strong_areas || "N/A"}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle1" fontWeight="bold">
-                Weak Areas
+                Слабые сороны
               </Typography>
               <Typography>{generalData.weak_areas || "N/A"}</Typography>
             </Box>
@@ -238,49 +290,59 @@ const InterviewDetailsPage: React.FC = () => {
             </Box>
           </Stack>
         </Paper>
+        </>
       )}
 
       {view === "answers" && (
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-          <Typography variant="h6" fontWeight="bold" mb={2}>Answers</Typography>
-
-          <Stack direction="row" spacing={1} flexWrap="wrap" mb={3}>
-            {detailsData.candidate_answers.map((answer) => (
-              <Chip
-                key={answer.id}
-                label={`Question ${answer.question_id}`}
-                onClick={() => handleQuestionChange(answer.question_id)}
-                color={
-                  selectedQuestion === answer.question_id
-                    ? "primary"
-                    : "default"
-                }
-              />
+        <>
+          <Typography variant="h5" fontWeight="bold" mb={2}>Ответы на вопросы</Typography>
+          <ToggleButtonGroup
+            value={selectedQuestion}
+            exclusive
+            onChange={(_e, value) => {
+              if (value !== null) handleQuestionChange(value);
+            }}
+            sx={{ mb: 3, flexWrap: "wrap" }}
+          >
+            {detailsData.candidate_answers.map((answer, index) => (
+              <ToggleButton sx={{width: 40, height: 30}} key={answer.id} value={answer.question_id}>
+                {index + 1}
+              </ToggleButton>
             ))}
-          </Stack>
+          </ToggleButtonGroup>
 
           {currentQuestion && (
             <Box mb={3}>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Question
+              <Typography variant="h6" fontWeight="bold" mb={1}>
+                Вопрос
               </Typography>
-              <Typography>{currentQuestion.question}</Typography>
-              <Typography variant="subtitle1" fontWeight="bold" mt={1}>
-                Hint
-              </Typography>
-              <Typography>{currentQuestion.hint_for_evaluation}</Typography>
-              <Stack direction="row" spacing={1} mt={1}>
-                <Chip label={`Type: ${currentQuestion.question_type}`} />
-                <Chip label={`Weight: ${currentQuestion.weight}`} />
-                <Chip label={`Time: ${currentQuestion.response_time}s`} />
-              </Stack>
+              <Paper>
+
+              <ListItemText
+                primary={
+                  <Typography variant="subtitle1" fontWeight="500" fontSize={16}>
+                    {currentQuestion.question}
+                  </Typography>
+                }
+                secondary={
+                  <>
+                    Подсказка: {currentQuestion.hint_for_evaluation}
+                    <Stack direction="row" mt={2} flexWrap="wrap">
+                      <Chip label={'Навык: ' + currentQuestion.question_type} />
+                      <Chip label={'Вес: ' + currentQuestion.weight} />
+                      <Chip label={currentQuestion.response_time + ' мин'} />
+                    </Stack>
+                  </>
+                }
+                />
+                </Paper>
             </Box>
           )}
 
           {currentAnswer && (
             <Box mb={3}>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Message to HR
+              <Typography variant="h6" fontWeight="bold">
+                Оценка ответа
               </Typography>
               <Alert severity="info" sx={{ mt: 1 }}>
                 <Typography>{currentAnswer.message_to_hr}</Typography>
@@ -288,8 +350,8 @@ const InterviewDetailsPage: React.FC = () => {
             </Box>
           )}
 
-          <Typography variant="subtitle1" fontWeight="bold" mb={1}>
-            Dialog Transcript
+          <Typography variant="h6" fontWeight="bold" mb={1}>
+            Транскрипт интервью
           </Typography>
           <Box
             sx={{
@@ -328,7 +390,7 @@ const InterviewDetailsPage: React.FC = () => {
               </Box>
             ))}
           </Box>
-        </Paper>
+        </>
       )}
     </Box>
   );

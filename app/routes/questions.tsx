@@ -80,7 +80,6 @@ const QuestionsPage: React.FC = () => {
         const saveRes = await axios.post("https://vtb-aihr.ru/api/vacancy/question/add", {
           vacancy_id: vacancyId,
           ...q,
-          // response_time: 60, // Default response time for generated questions
         });
 
         saved.push({
@@ -304,7 +303,7 @@ function QuestionListItem({ q, handleEdit, handleDelete }: {
           primary={`${q.question} (${q.question_type}, weight: ${q.weight})`}
           secondary={
             <>
-              Подсказка: {q.hint_for_evaluation}, Response Time: {q.response_time} мин
+              Подсказка: {q.hint_for_evaluation}
               <Stack direction="row" mt={2} flexWrap="wrap">
                 <Chip label={'Навык: ' + q.question_type} />
                 <Chip label={'Вес: ' + q.weight} />

@@ -62,7 +62,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#EDF6FF",
-          padding: "4px 16px",
+          padding: "4px 4px",
           color: "#3361EC",
           borderRadius: 8,
           fontWeight: 500,

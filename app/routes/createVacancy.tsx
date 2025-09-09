@@ -119,11 +119,11 @@ const TagInput = memo(({ newTag, setNewTag, tags, onAdd, onDelete, onGenerate, l
           ),
         }}
       />
-      <Button className="generate-button" onClick={onGenerate} variant="contained" disabled={loading}>
+      <Button className="generate-button" size="large" onClick={onGenerate} variant="contained" disabled={loading}>
         {loading ? "Генерация..." : "Сгенерировать"}
       </Button>
     </Stack>
-    <Stack direction="row" spacing={1} mt={2} flexWrap="wrap">
+    <Stack direction="row" mt={2} flexWrap="wrap">
       {tags.map((tag: string, index: number) => (
         <Chip key={index} label={tag} onDelete={() => onDelete(tag)} />
       ))}

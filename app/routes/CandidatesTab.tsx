@@ -26,9 +26,9 @@ interface CandidatesTabProps {
 }
 
 const statusMap: { [key: string]: { label: string; color: "success" | "warning" | "error" | "default" } } = {
-  next: { label: "Next", color: "success" },
-  rejected: { label: "Rejected", color: "error" },
-  in_process: { label: "In Process", color: "warning" },
+  next: { label: "Интервью пройдено", color: "success" },
+  rejected: { label: "Интервью не пройдено", color: "error" },
+  in_process: { label: "В процессе прохождения", color: "warning" },
 };
 
 const CandidatesTab: React.FC<CandidatesTabProps> = ({
@@ -115,7 +115,7 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
           <TableBody>
             {filteredCandidates.map((candidate) => (
               <TableRow key={candidate.id} onClick={() => handleRowClick(candidate.id)}
-              sx={{ cursor: "pointer", "&:hover": { backgroundColor: useTheme().palette.action.hover } }}
+                sx={{ cursor: "pointer", "&:hover": { backgroundColor: useTheme().palette.action.hover } }}
               >
                 <TableCell>{candidate.candidate_name}</TableCell>
                 <TableCell>
@@ -132,10 +132,27 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
                 </TableCell>
                 <TableCell>{candidate.general_score}</TableCell>
                 <TableCell>
-                  <Chip
-                    label={statusMap[candidate.general_result]?.label || candidate.general_result}
-                    color={statusMap[candidate.general_result]?.color || "default"}
-                  />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: "bold",
+                      color: (() => {
+                        switch (candidate.general_result.toUpperCase()) {
+                          case "NEXT":
+                            return "green";
+                          case "REJECTED":
+                            return "red";
+                          case "DISPUTABLE":
+                          case "IN_PROCESS":
+                            return "grey";
+                          default:
+                            return "text.primary";
+                        }
+                      })(),
+                    }}
+                  >
+                    {statusMap[candidate.general_result]?.label || candidate.general_result}
+                  </Typography>
                 </TableCell>
                 <TableCell>
                   {candidate.general_result === "next" && (
@@ -143,7 +160,7 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
                       e.stopPropagation();
                       // navigate("/send-invitation/" + candidate.id);
                     }}>
-                      Send Invitation
+                      Назначить собеседование
                     </Button>
                   )}
                 </TableCell>
