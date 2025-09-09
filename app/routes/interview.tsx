@@ -40,6 +40,7 @@ interface Message {
   text: string;
   audioUrl?: string;
   style?: 'bold' | 'normal';
+  subtitle?: string;
 }
 
 export interface StartInterviewResponse {
@@ -120,6 +121,7 @@ const InterviewApp = () => {
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const [currentQuestionTime, setCurrentQuestionTime] = useState<number | null>(null);
   const [questionTimeById, setQuestionTimeById] = useState<Record<number, number>>({});
+  const [questionIndex, setQuestionIndex] = useState<number>(0);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -136,21 +138,6 @@ const InterviewApp = () => {
     const welcomeMessage = `Здравствуйте!\nПоздравляю с прохождением до этапа интервью.\n\nВам будут заданы вопросы с целью проверить ваши навыки и опыт.\n\nКак будете готовы — нажмите кнопку “Начать интервью”`;
     setMessages([{ type: "bot", text: welcomeMessage, style: 'normal' }]);
   }, []);
-
-  const fetchCurrentQuestionTime = useCallback(() => {
-    try {
-      const currentQuestionId = interviewState?.question_id;
-      if (!currentQuestionId) {
-        setCurrentQuestionTime(120);
-        return;
-      }
-      const seconds = questionTimeById[currentQuestionId];
-      setCurrentQuestionTime(typeof seconds === 'number' ? seconds : 120);
-    } catch (err) {
-      console.error(err);
-      setCurrentQuestionTime(120);
-    }
-  }, [interviewState?.question_id, questionTimeById]);
 
   // Reset timer whenever question_id changes and we have mapping ready
   useEffect(() => {
@@ -188,11 +175,13 @@ const InterviewApp = () => {
       if (!res.ok) throw new Error("Failed to start interview");
       const data: StartInterviewResponse = await res.json();
       setInterviewState(data);
+      setQuestionIndex(1);
       setMessages((prev) => [
         ...prev,
         {
           type: "bot",
           text: data.message_to_candidate,
+          subtitle: `Вопрос 1 из ${data.total_question}`,
           audioUrl: data.llm_audio_fid ? `https://vtb-aihr.ru/api/vacancy/interview/audio/${data.llm_audio_fid}/${data.llm_audio_filename}` : undefined,
         },
       ]);
@@ -262,6 +251,10 @@ const InterviewApp = () => {
         ]);
 
       } else {
+        const previousQuestionId = interviewState?.question_id;
+        const isClarifying = previousQuestionId === data.question_id;
+        const nextIndex = isClarifying ? questionIndex : questionIndex + 1;
+        setQuestionIndex(nextIndex);
         setInterviewState((prev) => ({
           ...prev!,
           question_id: data.question_id,
@@ -274,6 +267,7 @@ const InterviewApp = () => {
           {
             type: "bot",
             text: data.message_to_candidate,
+            subtitle: isClarifying ? "Уточняющий вопрос" : `Вопрос ${nextIndex} из ${interviewState?.total_question ?? ''}`,
             audioUrl: data.llm_audio_fid ? `https://vtb-aihr.ru/api/vacancy/interview/audio/${data.llm_audio_fid}/${data.llm_audio_filename}` : undefined,
           },
         ]);
@@ -311,6 +305,11 @@ const InterviewApp = () => {
       <Stack direction="row" alignItems="flex-start" justifyContent={align} sx={{ mb: 2 }}>
         {isBot && <Box component="img" src="/favicon.png" alt="avatar" sx={{ width: 40, height: 40, borderRadius: '50%', flexShrink: 0 }} />}
         <Paper sx={{ backgroundColor: bgColor, color: "black", flexDirection: "row", flexGrow: 1 }}>
+          {isBot && message.subtitle && (
+            <Typography variant="caption" sx={{ color: '#778093', fontWeight: 600, display: 'block', mb: 0.5 }}>
+              {message.subtitle}
+            </Typography>
+          )}
           <Typography sx={{ whiteSpace: 'pre-line', fontWeight: message.style === 'normal' ? 500 : 600 }}>{message.text}</Typography>
           {message.audioUrl && (
             <>
