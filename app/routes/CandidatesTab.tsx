@@ -16,6 +16,7 @@ import {
   Paper,
   Button,
   useTheme,
+  Badge,
 } from "@mui/material";
 import { type CandidateEvaluation } from "../types";
 import { useNavigate, useParams } from "react-router";
@@ -67,6 +68,27 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
 
   return (
     <Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" alignItems="center" gap={1}>
+            <Typography variant="h6" fontWeight="bold">Кандидаты</Typography>
+          <Badge style={{marginLeft: 20}} sx={{
+            '& .MuiBadge-badge': {
+              backgroundColor: '#3361EC',
+              height: 27,
+              width: 27,
+              borderRadius: 2,
+              fontSize: 14,
+            },
+          }} badgeContent={candidates.length} color="primary">
+          </Badge>
+        </Box>
+        <Button
+          variant="contained"
+          onClick={() => navigate(`/resumeScreening/${vacancy_id}`)}
+        >
+          Загрузить резюме
+        </Button>
+      </Box>
       <Box display="flex" gap={2} mb={3} width={870}>
         <TextField
           label="Кандидат"
@@ -101,9 +123,9 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
         </FormControl>
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ p: 0 }}>
         <Table>
-          <TableHead>
+          <TableHead style={{ backgroundColor: "#EDF6FF" }}>
             <TableRow>
               <TableCell>Кандидат</TableCell>
               <TableCell>Почта и Телефон</TableCell>
