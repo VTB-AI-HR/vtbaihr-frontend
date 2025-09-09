@@ -58,6 +58,17 @@ const theme = createTheme({
         },
       },
     },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#ffffff",
+          borderRadius: 8,
+          "& fieldset": {
+            border: "none",
+          },
+        },
+      },
+    },
     MuiChip: {
       styleOverrides: {
         root: {
