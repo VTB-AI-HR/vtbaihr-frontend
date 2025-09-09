@@ -37,10 +37,10 @@ interface InterviewData {
   logic_structure_score: number;
   accordance_xp_resume_score: number;
   accordance_skill_resume_score: number;
+  general_score: number;
   strong_areas: string;
   weak_areas: string;
   approved_skills: string[];
-  general_score: number;
   general_result: string;
   message_to_candidate: string;
   message_to_hr: string;
@@ -276,6 +276,22 @@ const InterviewDetailsPage: React.FC = () => {
             <Stack spacing={2}>
               <Box>
                 <Typography variant="subtitle1" fontWeight="bold">
+                  Метрики
+                </Typography>
+                <Stack mt={2} direction="row" flexWrap="wrap">
+                  <Chip label={'Соответствие опыта вакансии: ' + generalData.accordance_xp_vacancy_score} />
+                  <Chip label={'Соответствие навыков вакансии: ' + generalData.accordance_skill_vacancy_score} />
+                  <Chip label={'Красные флаги: ' + generalData.red_flag_score} />
+                  <Chip label={'Хард скиллы: ' + generalData.hard_skill_score} />
+                  <Chip label={'Софт скиллы: ' + generalData.soft_skill_score} />
+                  <Chip label={'Логика и структура ответа: ' + generalData.logic_structure_score} />
+                  <Chip label={'Соответствие опыта резюме: ' + generalData.accordance_xp_resume_score} />
+                  <Chip label={'Соответствие навыков резюме: ' + generalData.accordance_skill_resume_score} />
+                  <Chip label={'Итоговый балл: ' + generalData.general_score} />
+                </Stack>
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
                   Сильные стороны
                 </Typography>
                 <Typography>{generalData.strong_areas || "N/A"}</Typography>
@@ -364,9 +380,12 @@ const InterviewDetailsPage: React.FC = () => {
 
           {currentAnswer && currentAnswer.message_to_hr && (
             <Box mb={3}>
-              <Typography variant="h6" fontWeight="bold">
-                Оценка ответа
-              </Typography>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography variant="h6" fontWeight="bold">
+                  Комментарий к ответу
+                </Typography>
+                <Chip label={`Оценка: ${currentAnswer.score}/5`} />
+              </Stack>
               <Alert severity="info" sx={{ mt: 1 }}>
                 <Typography>{currentAnswer.message_to_hr}</Typography>
               </Alert>
