@@ -94,8 +94,9 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
           >
             <MenuItem value="">Все</MenuItem>
             <MenuItem value="next">Интервью пройдено</MenuItem>
-            <MenuItem value="rejected">Интервью не пройдено</MenuItem>
+            <MenuItem value="disputable">Спорный результат</MenuItem>
             <MenuItem value="in_process">В процессе прохождения</MenuItem>
+            <MenuItem value="rejected">Интервью не пройдено</MenuItem>
           </Select>
         </FormControl>
       </Box>
