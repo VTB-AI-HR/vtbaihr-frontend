@@ -20,7 +20,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import axios from "axios";
 import { useNavigate } from "react-router";
 import "./createVacancy.css";
-import Back from "../components/back";
+import Back from "./back";
 
 type SkillLevel = "junior" | "middle" | "senior" | "lead";
 

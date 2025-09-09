@@ -92,10 +92,10 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
             // @ts-ignore-next-line
             onChange={handleFilterChange}
           >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="next">Next</MenuItem>
-            <MenuItem value="rejected">Rejected</MenuItem>
-            <MenuItem value="in_process">In Process</MenuItem>
+            <MenuItem value="">Все</MenuItem>
+            <MenuItem value="next">Интервью пройдено</MenuItem>
+            <MenuItem value="rejected">Интервью не пройдено</MenuItem>
+            <MenuItem value="in_process">В процессе прохождения</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -104,9 +104,9 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Candidate</TableCell>
-              <TableCell>Email + Phone</TableCell>
-              <TableCell>Resume Assessment</TableCell>
+              <TableCell>Кандидат</TableCell>
+              <TableCell>Почта и Телефон</TableCell>
+              <TableCell>Оценка резюме</TableCell>
               <TableCell>Interview Assessment</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Action</TableCell>
@@ -126,8 +126,8 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
                 </TableCell>
                 <TableCell>
                   <Box>
-                    <Typography>XP Score: {candidate.accordance_xp_vacancy_score}</Typography>
-                    <Typography>Skill Score: {candidate.accordance_skill_vacancy_score}</Typography>
+                    <Typography>Навыки: {candidate.accordance_skill_vacancy_score}</Typography>
+                    <Typography>Опыт: {candidate.accordance_xp_vacancy_score}</Typography>
                   </Box>
                 </TableCell>
                 <TableCell>{candidate.general_score}</TableCell>

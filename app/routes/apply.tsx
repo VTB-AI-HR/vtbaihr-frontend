@@ -13,9 +13,9 @@ import {
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import axios from "axios";
 import type { VacancyResponse } from "../types";
-import { useNavigate, useParams } from "react-router";
-import VacancyPaper from "../components/vacancy";
-import Back from "../components/back";
+import {  useParams } from "react-router";
+import VacancyPaper from "./vacancyCard";
+import Back from "./back";
 
 const ApplyVacancy: React.FC = () => {
   const { id } = useParams<{ id: string }>();

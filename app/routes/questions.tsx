@@ -22,7 +22,7 @@ import {
 import { Edit, Delete, AutoAwesome as AutoAwesomeIcon } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
-import Back from "../components/back";
+import Back from "./back";
 
 interface Question {
   id?: number;

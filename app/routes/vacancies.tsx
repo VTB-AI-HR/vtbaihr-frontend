@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import type { VacancyResponse } from "../types";
 import { useNavigate, useSearchParams } from "react-router";
-import VacancyPaper from "../components/vacancy";
+import VacancyPaper from "./vacancyCard";
 
 const VacanciesList: React.FC = () => {
   const [vacancies, setVacancies] = useState<VacancyResponse[]>([]);

@@ -13,7 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import type { VacancyResponse } from "../types";
 import { useNavigate } from "react-router";
-import "./vacancy.css";
+import "./vacancyCard.css";
 
 interface VacancyPaperProps {
   vacancy: VacancyResponse;
