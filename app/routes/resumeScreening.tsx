@@ -276,15 +276,15 @@ const ResumeScreeningPage: React.FC = () => {
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Screening results
+            Результаты проверки резюме
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2 }}>
             <Paper elevation={1} sx={{ p: 2, flexGrow: 1, mr: 1 }}>
-              <Typography variant="subtitle1">Passed</Typography>
+              <Typography variant="subtitle1">Прошло проверку</Typography>
               <Typography variant="h4">{passed}</Typography>
             </Paper>
             <Paper elevation={1} sx={{ p: 2, flexGrow: 1, ml: 1 }}>
-              <Typography variant="subtitle1">Failed</Typography>
+              <Typography variant="subtitle1">Не прошло проверку</Typography>
               <Typography variant="h4">{failed}</Typography>
             </Paper>
           </Box>
@@ -293,7 +293,7 @@ const ResumeScreeningPage: React.FC = () => {
             на прохождение интервью
           </Typography>
           <Button variant="contained" onClick={handleDone}>
-            Done
+            Спасибо
           </Button>
         </Box>
       </Modal>
