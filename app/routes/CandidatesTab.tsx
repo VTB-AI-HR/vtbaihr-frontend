@@ -14,7 +14,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   Button,
   useTheme,
 } from "@mui/material";
@@ -29,6 +28,7 @@ const statusMap: { [key: string]: { label: string; color: "success" | "warning" 
   next: { label: "Интервью пройдено", color: "success" },
   rejected: { label: "Интервью не пройдено", color: "error" },
   in_process: { label: "В процессе прохождения", color: "warning" },
+  disputable: { label: "Спорный результат", color: "warning" },
 };
 
 const CandidatesTab: React.FC<CandidatesTabProps> = ({
@@ -142,7 +142,8 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
                             return "green";
                           case "REJECTED":
                             return "red";
-                          case "DISPUTABLE":
+                            case "DISPUTABLE":
+                              return "orange";
                           case "IN_PROCESS":
                             return "grey";
                           default:

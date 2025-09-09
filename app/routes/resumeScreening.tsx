@@ -257,7 +257,7 @@ const ResumeScreeningPage: React.FC = () => {
         onClick={handleEvaluate}
         disabled={!selectedVacancyId || files.length === 0}
       >
-        Start Resume Screening
+        Начать проверку резюме
       </Button>
 
       <Modal open={openModal} onClose={handleDone}>

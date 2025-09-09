@@ -120,6 +120,7 @@ const InterviewApp = () => {
   const [recordingTime, setRecordingTime] = useState(0);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const [currentQuestionTime, setCurrentQuestionTime] = useState<number | null>(null);
+  const [questionTimeById, setQuestionTimeById] = useState<Record<number, number>>({});
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -137,18 +138,41 @@ const InterviewApp = () => {
     setMessages([{ type: "bot", text: welcomeMessage, style: 'normal' }]);
   }, []);
 
-  const fetchCurrentQuestionTime = useCallback(async () => {
+  const fetchCurrentQuestionTime = useCallback(() => {
     try {
-      const res = await fetch(`https://vtb-aihr.ru/api/vacancy/question/all/${vacancy_id}`);
-      if (!res.ok) throw new Error("Failed to fetch questions");
-      const questions: Question[] = await res.json();
-      const current = questions.find((q) => q.id === interviewState?.question_id);
-      setCurrentQuestionTime(current?.response_time && current.response_time * 60 || 120);
+      const currentQuestionId = interviewState?.question_id;
+      if (!currentQuestionId) {
+        setCurrentQuestionTime(120);
+        return;
+      }
+      const seconds = questionTimeById[currentQuestionId];
+      setCurrentQuestionTime(typeof seconds === 'number' ? seconds : 120);
     } catch (err) {
       console.error(err);
       setCurrentQuestionTime(120);
     }
-  }, [interviewState?.question_id]);
+  }, [interviewState?.question_id, questionTimeById]);
+
+  // Fetch all questions once and cache response_time by id
+  useEffect(() => {
+    const fetchAllQuestions = async () => {
+      if (!vacancy_id) return;
+      try {
+        const res = await fetch(`https://vtb-aihr.ru/api/vacancy/question/all/${vacancy_id}`);
+        if (!res.ok) throw new Error("Failed to fetch questions");
+        const questions: Question[] = await res.json();
+        const mapping: Record<number, number> = {};
+        for (const q of questions) {
+          // store seconds (minutes * 60)
+          mapping[q.id] = (q.response_time || 2) * 60;
+        }
+        setQuestionTimeById(mapping);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchAllQuestions();
+  }, [vacancy_id]);
 
   // ---------------- API ----------------
   const startInterview = async () => {

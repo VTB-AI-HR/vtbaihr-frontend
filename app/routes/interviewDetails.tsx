@@ -362,7 +362,7 @@ const InterviewDetailsPage: React.FC = () => {
             </Box>
           )}
 
-          {currentAnswer && (
+          {currentAnswer && currentAnswer.message_to_hr && (
             <Box mb={3}>
               <Typography variant="h6" fontWeight="bold">
                 Оценка ответа
