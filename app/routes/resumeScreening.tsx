@@ -19,7 +19,7 @@ import {
   Modal,
 } from "@mui/material";
 import axios from "axios";
-import type { VacancyResponse } from "~/types";
+import type { VacancyResponse } from "../types";
 
 interface EvaluationResult {
   candidate_email: string;

@@ -15,7 +15,7 @@ import axios from "axios";
 import type { VacancyResponse } from "../types";
 import { useNavigate, useParams } from "react-router";
 import VacancyPaper from "../components/vacancy";
-import Back from "~/components/back";
+import Back from "../components/back";
 
 const ApplyVacancy: React.FC = () => {
   const { id } = useParams<{ id: string }>();
