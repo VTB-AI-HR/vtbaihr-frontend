@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router";
 import {
   Box,
@@ -13,9 +13,12 @@ import {
   Chip,
   Grid,
   ListItemText,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import Back from "./back";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 
 interface InterviewData {
   id: number;
@@ -73,6 +76,8 @@ interface InterviewMessage {
   question_id: number;
   role: string;
   text: string;
+  audio_name?: string;
+  audio_fid?: string;
   created_at: string;
 }
 
@@ -85,6 +90,25 @@ const InterviewDetailsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"result" | "answers">("result");
   const [selectedQuestion, setSelectedQuestion] = useState<number | null>(null);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+  const [playingAudio, setPlayingAudio] = useState<{ id: number; role: string } | null>(null);
+
+  const getAudioUrl = (audio_fid: string, audio_name: string) => {
+    return `https://vtb-aihr.ru/api/vacancy/interview/audio/${audio_fid}/${audio_name}`;
+  };
+
+  const togglePlay = (messageId: number, audioUrl: string, role: string) => {
+    if (!audioPlayerRef.current) return;
+
+    if (playingAudio?.id === messageId) {
+      audioPlayerRef.current.pause();
+      setPlayingAudio(null);
+    } else {
+      audioPlayerRef.current.src = audioUrl;
+      audioPlayerRef.current.play();
+      setPlayingAudio({ id: messageId, role });
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -212,9 +236,9 @@ const InterviewDetailsPage: React.FC = () => {
         </Typography>
       )}
       <Grid container alignItems="center" justifyContent="space-between" mb={3}>
-          <Typography variant="h4" fontWeight="bold">
-            {generalData.candidate_name || generalData.candidate_email}
-          </Typography>
+        <Typography variant="h4" fontWeight="bold">
+          {generalData.candidate_name || generalData.candidate_email}
+        </Typography>
       </Grid>
       <ToggleButtonGroup
         value={view}
@@ -229,7 +253,7 @@ const InterviewDetailsPage: React.FC = () => {
       {view === "result" && (
         <>
           <Grid container alignItems="center" justifyContent="space-between" mb={2} mt={2}>
-              <Typography variant="h6" fontWeight="bold">Отчёт</Typography>
+            <Typography variant="h6" fontWeight="bold">Отчёт</Typography>
 
             <Button
               variant="contained"
@@ -248,48 +272,48 @@ const InterviewDetailsPage: React.FC = () => {
               Скачать резюме
             </Button>
           </Grid>
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-          <Stack spacing={2}>
-            <Box>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Сильные стороны
-              </Typography>
-              <Typography>{generalData.strong_areas || "N/A"}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Слабые сороны
-              </Typography>
-              <Typography>{generalData.weak_areas || "N/A"}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Подтвержденные навыки
-              </Typography>
-              {generalData.approved_skills && generalData.approved_skills.length > 0 ? (
-                <Stack mt={2} direction="row" flexWrap="wrap">
-                  {generalData.approved_skills.map((skill, index) => (
-                    <Chip key={index} label={skill} />
-                  ))}
-                </Stack>
-              ) : (
-                <Typography>N/A</Typography>
-              )}
-            </Box>
-            <Box>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Сообщение нанимающему менеджеру
-              </Typography>
-              <Typography>{generalData.message_to_hr || "N/A"}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Фидбек для кандидата
-              </Typography>
-              <Typography>{generalData.message_to_candidate || "N/A"}</Typography>
-            </Box>
-          </Stack>
-        </Paper>
+          <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+            <Stack spacing={2}>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Сильные стороны
+                </Typography>
+                <Typography>{generalData.strong_areas || "N/A"}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Слабые сороны
+                </Typography>
+                <Typography>{generalData.weak_areas || "N/A"}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Подтвержденные навыки
+                </Typography>
+                {generalData.approved_skills && generalData.approved_skills.length > 0 ? (
+                  <Stack mt={2} direction="row" flexWrap="wrap">
+                    {generalData.approved_skills.map((skill, index) => (
+                      <Chip key={index} label={skill} />
+                    ))}
+                  </Stack>
+                ) : (
+                  <Typography>N/A</Typography>
+                )}
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Сообщение нанимающему менеджеру
+                </Typography>
+                <Typography>{generalData.message_to_hr || "N/A"}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Фидбек для кандидата
+                </Typography>
+                <Typography>{generalData.message_to_candidate || "N/A"}</Typography>
+              </Box>
+            </Stack>
+          </Paper>
         </>
       )}
 
@@ -304,11 +328,11 @@ const InterviewDetailsPage: React.FC = () => {
             }}
             sx={{ mb: 3, flexWrap: "wrap" }}
           >
-            {detailsData.candidate_answers.map((answer, index) => (
-              <ToggleButton sx={{width: 40, height: 30}} key={answer.id} value={answer.question_id}>
-                {index + 1}
-              </ToggleButton>
-            ))}
+          {[...new Set(detailsData.candidate_answers.map(a => a.question_id))].map((qid, index) => (
+            <ToggleButton sx={{ width: 40, height: 30 }} key={qid} value={qid}>
+              {index + 1}
+            </ToggleButton>
+          ))}
           </ToggleButtonGroup>
 
           {currentQuestion && (
@@ -317,25 +341,24 @@ const InterviewDetailsPage: React.FC = () => {
                 Вопрос
               </Typography>
               <Paper>
-
-              <ListItemText
-                primary={
-                  <Typography variant="subtitle1" fontWeight="500" fontSize={16}>
-                    {currentQuestion.question}
-                  </Typography>
-                }
-                secondary={
-                  <>
-                    Подсказка: {currentQuestion.hint_for_evaluation}
-                    <Stack direction="row" mt={2} flexWrap="wrap">
-                      <Chip label={'Навык: ' + currentQuestion.question_type} />
-                      <Chip label={'Вес: ' + currentQuestion.weight} />
-                      <Chip label={currentQuestion.response_time + ' мин'} />
-                    </Stack>
-                  </>
-                }
+                <ListItemText
+                  primary={
+                    <Typography variant="subtitle1" fontWeight="500" fontSize={16}>
+                      {currentQuestion.question}
+                    </Typography>
+                  }
+                  secondary={
+                    <>
+                      Подсказка: {currentQuestion.hint_for_evaluation}
+                      <Stack direction="row" mt={2} flexWrap="wrap">
+                        <Chip label={'Навык: ' + currentQuestion.question_type} />
+                        <Chip label={'Вес: ' + currentQuestion.weight} />
+                        <Chip label={currentQuestion.response_time + ' мин'} />
+                      </Stack>
+                    </>
+                  }
                 />
-                </Paper>
+              </Paper>
             </Box>
           )}
 
@@ -383,9 +406,21 @@ const InterviewDetailsPage: React.FC = () => {
                   }}
                 >
                   <Typography variant="body1">{message.text}</Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>
-                    {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </Typography>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                    <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+                      {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Typography>
+                    {message.audio_fid && message.audio_name && (
+                      <IconButton
+                        size="small"
+                        onClick={() => togglePlay(message.id, getAudioUrl(message.audio_fid!, message.audio_name!), message.role)}
+                        sx={{ p: 0.5 }}
+                      >
+                        <audio ref={audioPlayerRef} onEnded={() => setPlayingAudio(null)} />
+                        {playingAudio?.id === message.id ? <PauseIcon fontSize="small" /> : <PlayArrowIcon fontSize="small" />}
+                      </IconButton>
+                    )}
+                  </Box>
                 </Box>
               </Box>
             ))}
