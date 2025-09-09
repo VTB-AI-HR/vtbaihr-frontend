@@ -66,7 +66,7 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ vacancyId }) => {
             <TableRow>
               <TableCell>Вопрос</TableCell>
               <TableCell>Подсказка проверки</TableCell>
-              <TableCell>Веса</TableCell>
+              <TableCell>Вес</TableCell>
               <TableCell>Типа</TableCell>
               <TableCell>Время на ответ</TableCell>
             </TableRow>

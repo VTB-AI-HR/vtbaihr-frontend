@@ -26,14 +26,13 @@ const pulse = keyframes`
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
 `;
 
-const RecordingButton = styled(IconButton)(() => ({
-  animation: `${pulse} 1.5s infinite`,
-  backgroundColor: "#ef5350",
-  color: "white",
-  "&:hover": {
-    backgroundColor: "#d32f2f",
-  },
-}));
+// Typing indicator animation
+const bounce = keyframes`
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+`;
+
+// (Recording button now uses the main action button with timer and stop icon)
 
 // ---------------- Types ----------------
 interface Message {
@@ -130,7 +129,7 @@ const InterviewApp = () => {
   // Scroll chat
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isProcessing]);
 
   // Initial welcome
   useEffect(() => {
@@ -339,6 +338,24 @@ const InterviewApp = () => {
     );
   };
 
+  const TypingBubble = () => {
+    return (
+      <Stack direction="row" alignItems="flex-start" justifyContent="flex-start" sx={{ mb: 2 }}>
+        <Box component="img" src="/favicon.png" alt="avatar" sx={{ width: 40, height: 40, borderRadius: '50%', flexShrink: 0 }} />
+        <Paper sx={{ backgroundColor: 'white', color: 'black', flexDirection: 'row', flexGrow: 1 }}>
+          <Typography sx={{ fontWeight: 500, display: 'flex', alignItems: 'center' }}>
+            Робот думает
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', ml: 1 }}>
+              <Box sx={{ width: 6, height: 6, bgcolor: '#3361EC', borderRadius: '50%', mr: 0.5, animation: `${bounce} 1.4s infinite ease-in-out` }} />
+              <Box sx={{ width: 6, height: 6, bgcolor: '#3361EC', borderRadius: '50%', mr: 0.5, animation: `${bounce} 1.4s infinite ease-in-out`, animationDelay: '0.2s' }} />
+              <Box sx={{ width: 6, height: 6, bgcolor: '#3361EC', borderRadius: '50%', animation: `${bounce} 1.4s infinite ease-in-out`, animationDelay: '0.4s' }} />
+            </Box>
+          </Typography>
+        </Paper>
+      </Stack>
+    );
+  };
+
   const renderControls = () => {
     if (isInterviewComplete) return (
       <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
@@ -353,20 +370,24 @@ const InterviewApp = () => {
       </Box>
     );
 
-    if (isRecording) return (
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Typography variant="h6" fontWeight={600} mb={1}>{`${Math.floor(recordingTime / 60).toString().padStart(2, "0")}:${(recordingTime % 60).toString().padStart(2, "0")}`}</Typography>
-        <RecordingButton sx={{ width: 80, height: 80 }} onClick={stopRecording}><StopIcon sx={{ fontSize: 50 }} /></RecordingButton>
-      </Box>
-    );
-
     return (
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-        <Button variant="outlined" color="error" onClick={() => setShowEndInterviewModal(true)}>Завершить досрочно</Button>
+      <Box sx={{ display: "flex", gap:'16px', justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+        <Button fullWidth variant="outlined" color="error" onClick={() => setShowEndInterviewModal(true)}>Завершить досрочно</Button>
         {isProcessing ? (
-          <Button variant="contained" color="primary" endIcon={<AutorenewIcon />}>Обработка ответа</Button>
+          <Button fullWidth variant="contained" color="primary" endIcon={<AutorenewIcon />}>Обработка ответа</Button>
+        ) : isRecording ? (
+          <Button
+            fullWidth
+            variant="contained"
+            color="error"
+            endIcon={<StopIcon />}
+            onClick={stopRecording}
+            sx={{ animation: `${pulse} 1.5s infinite` }}
+          >
+            {`${Math.floor(recordingTime / 60).toString().padStart(2, "0")}:${(recordingTime % 60).toString().padStart(2, "0")}`}
+          </Button>
         ) : (
-          <Button variant="contained" color="primary" startIcon={<MicIcon />} onClick={startRecording}>Записать ответ</Button>
+          <Button fullWidth variant="contained" color="primary" startIcon={<MicIcon />} onClick={startRecording}>Записать ответ</Button>
         )}
       </Box>
     );
@@ -377,6 +398,7 @@ const InterviewApp = () => {
       <Typography mb={3} mt={3} variant="h4" fontWeight={600} gutterBottom>Интервью</Typography>
       <Box sx={{ flexGrow: 1, overflowY: "auto", borderRadius: "1rem", mb: 2, display: "flex", flexDirection: "column" }}>
         {messages.map((m, i) => <MessageBubble key={i} message={m} />)}
+        {isProcessing && <TypingBubble />}
         <div ref={chatBottomRef} />
       </Box>
       {currentQuestionTime !== null && !isInterviewComplete && <CountdownTimer initialSeconds={currentQuestionTime} />}
