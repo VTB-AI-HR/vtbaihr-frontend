@@ -195,7 +195,7 @@ const QuestionsPage: React.FC = () => {
               <TextField
                 fullWidth
                 select
-                label="Type"
+                label="Что проверяем"
                 value={newQuestion.question_type}
                 onChange={(e) => setNewQuestion({ ...newQuestion, question_type: e.target.value })}
               >
@@ -356,7 +356,7 @@ function QuestionListItem({ q, handleEdit, handleDelete }: {
               <TextField
                 select
                 fullWidth
-                label="Type"
+                label="Что проверяем"
                 value={editData.question_type}
                 onChange={(e) => setEditData({ ...editData, question_type: e.target.value })}
               >
