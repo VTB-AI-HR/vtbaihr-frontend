@@ -57,7 +57,7 @@ export interface Question {
   question: string;
   hint_for_evaluation: string;
   weight: number;
-  question_type: "soft" | "hard";
+  question_type: "soft" | "hard" | 'soft-hard';
   response_time: number;
   created_at: string;
 }

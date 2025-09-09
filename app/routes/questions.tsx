@@ -230,6 +230,7 @@ const QuestionsPage: React.FC = () => {
               >
                 <MenuItem value="soft">Soft</MenuItem>
                 <MenuItem value="hard">Hard</MenuItem>
+                <MenuItem value="soft-hard">Soft-Hard</MenuItem>
               </TextField>
             </Stack>
           </>
@@ -305,7 +306,7 @@ function QuestionListItem({ q, handleEdit, handleDelete }: {
             <>
               Подсказка: {q.hint_for_evaluation}, Response Time: {q.response_time} мин
               <Stack direction="row" mt={2} flexWrap="wrap">
-                <Chip label={'Навык ' + q.question_type} />
+                <Chip label={'Навык: ' + q.question_type} />
                 <Chip label={'Вес: ' + q.weight} />
                 <Chip label={q.response_time + ' мин'} />
               </Stack>

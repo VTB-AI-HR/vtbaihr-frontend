@@ -104,7 +104,6 @@ const VacancyPage: React.FC = () => {
 
       {tab === 0 && (
         <CandidatesTab candidates={candidates}
-          // vacancyId={urlVacancyId}
         />
       )}
       {tab === 1 && <VacancyTab vacancy={vacancy} />}

@@ -69,7 +69,7 @@ const SliderField = memo(
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography gutterBottom>{label}</Typography>
         <Badge
-          badgeContent={2}
+          badgeContent={value}
           color="primary"
           variant="standard"
           sx={{

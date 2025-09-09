@@ -22,7 +22,9 @@ interface InterviewData {
   general_result: string;
   strong_areas: string;
   weak_areas: string;
+  approved_skills: string[];
   message_to_hr: string;
+  message_to_candidate: string;
 }
 
 interface InterviewDetails {
@@ -189,14 +191,11 @@ const InterviewDetailsPage: React.FC = () => {
       {view === "result" && (
         <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
           <Grid container alignItems="center" justifyContent="space-between" mb={2}>
-            {/* <Item> */}
               <Typography variant="h6" fontWeight="bold">Result</Typography>
-            {/* </Item>
-            <Item> */}
               <Button variant="outlined" disabled>
                 Download Result
               </Button>
-            {/* </Item> */}
+
           </Grid>
           <Stack spacing={2}>
             <Box>
@@ -213,9 +212,29 @@ const InterviewDetailsPage: React.FC = () => {
             </Box>
             <Box>
               <Typography variant="subtitle1" fontWeight="bold">
-                Message to HR
+                Подтвержденные навыки
+              </Typography>
+              {generalData.approved_skills && generalData.approved_skills.length > 0 ? (
+                <Stack mt={2} direction="row" flexWrap="wrap">
+                  {generalData.approved_skills.map((skill, index) => (
+                    <Chip key={index} label={skill} />
+                  ))}
+                </Stack>
+              ) : (
+                <Typography>N/A</Typography>
+              )}
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" fontWeight="bold">
+                Сообщение нанимающему менеджеру
               </Typography>
               <Typography>{generalData.message_to_hr || "N/A"}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" fontWeight="bold">
+                Фидбек для кандидата
+              </Typography>
+              <Typography>{generalData.message_to_candidate || "N/A"}</Typography>
             </Box>
           </Stack>
         </Paper>
