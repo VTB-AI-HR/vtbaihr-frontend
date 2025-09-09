@@ -153,6 +153,13 @@ const InterviewApp = () => {
     }
   }, [interviewState?.question_id, questionTimeById]);
 
+  // Reset timer whenever question_id changes and we have mapping ready
+  useEffect(() => {
+    if (!interviewState?.question_id) return;
+    const seconds = questionTimeById[interviewState.question_id];
+    setCurrentQuestionTime(typeof seconds === 'number' ? seconds : 120);
+  }, [interviewState?.question_id, questionTimeById]);
+
   // Fetch all questions once and cache response_time by id
   useEffect(() => {
     const fetchAllQuestions = async () => {
@@ -190,7 +197,6 @@ const InterviewApp = () => {
           audioUrl: data.llm_audio_fid ? `https://vtb-aihr.ru/api/vacancy/interview/audio/${data.llm_audio_fid}/${data.llm_audio_filename}` : undefined,
         },
       ]);
-      fetchCurrentQuestionTime();
     } catch (err) {
       console.error(err);
       setMessages((prev) => [...prev, { type: "bot", text: "Failed to start the interview. Please try again." }]);
@@ -272,7 +278,6 @@ const InterviewApp = () => {
             audioUrl: data.llm_audio_fid ? `https://vtb-aihr.ru/api/vacancy/interview/audio/${data.llm_audio_fid}/${data.llm_audio_filename}` : undefined,
           },
         ]);
-        if (vacancy_id) fetchCurrentQuestionTime();
       }
     } catch (err) {
       console.error(err);
