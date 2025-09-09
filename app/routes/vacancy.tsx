@@ -93,12 +93,12 @@ const VacancyPage: React.FC = () => {
           <Tab
             label={
               <Badge badgeContent={candidates.length} color="primary">
-                Candidates
+                Кандидаты
               </Badge>
             }
           />
-          <Tab label="Vacancy" />
-          <Tab label="Questions" />
+          <Tab label="Вакансия" />
+          <Tab label="Вопросы" />
         </Tabs>
       </Box>
 

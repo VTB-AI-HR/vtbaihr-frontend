@@ -39,12 +39,11 @@ const CandidatesTab: React.FC<CandidatesTabProps> = ({
 
   const [filters, setFilters] = useState({
     candidate: "",
-    resumeAssessment: "",
     interviewAssessment: "",
     status: "",
   });
 
-const handleRowClick = (id: number) => {
+  const handleRowClick = (id: number) => {
     navigate("/vacancy/" + vacancy_id + "/interviewDetails/" + id);
   };
 
@@ -56,38 +55,28 @@ const handleRowClick = (id: number) => {
   };
 
   const filteredCandidates = candidates.filter((c) => {
-    const candidateMatch = c.candidate_name || 'no name'
+    const candidateMatch = (c.candidate_name || 'no name')
       .toLowerCase()
       .includes(filters.candidate.toLowerCase()) || c.candidate_email.toLowerCase().includes(filters.candidate.toLowerCase());
-    const resumeMatch =
-      !filters.resumeAssessment || c.accordance_xp_vacancy_score >= +filters.resumeAssessment;
     const interviewMatch =
       !filters.interviewAssessment || c.general_score >= +filters.interviewAssessment;
     const statusMatch = !filters.status || c.general_result === filters.status;
 
-    return candidateMatch && resumeMatch && interviewMatch && statusMatch;
+    return candidateMatch && interviewMatch && statusMatch;
   });
 
   return (
     <Box>
-      <Box display="flex" gap={2} mb={3}>
+      <Box display="flex" gap={2} mb={3} width={870}>
         <TextField
-          label="Candidate (name/email)"
+          label="Кандидат"
           name="candidate"
           value={filters.candidate}
           onChange={handleFilterChange}
           fullWidth
         />
         <TextField
-          label="Resume Assessment (score >=)"
-          name="resumeAssessment"
-          value={filters.resumeAssessment}
-          onChange={handleFilterChange}
-          type="number"
-          fullWidth
-        />
-        <TextField
-          label="Interview Assessment (score >=)"
+          label="Оценка собеседования"
           name="interviewAssessment"
           value={filters.interviewAssessment}
           onChange={handleFilterChange}
@@ -95,7 +84,7 @@ const handleRowClick = (id: number) => {
           fullWidth
         />
         <FormControl fullWidth>
-          <InputLabel>Status</InputLabel>
+          <InputLabel>Статус</InputLabel>
           <Select
             label="Status"
             name="status"

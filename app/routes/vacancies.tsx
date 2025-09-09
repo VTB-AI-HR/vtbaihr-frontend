@@ -81,7 +81,7 @@ const fetchVacancies = async () => {
   }
 
   return (
-    <Box maxWidth="560px" mx="auto" p={3}>
+    <Box maxWidth="610px" mx="auto" p={3}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mt={3}>
         <div>
       <Typography variant="subtitle2" fontWeight={600}>

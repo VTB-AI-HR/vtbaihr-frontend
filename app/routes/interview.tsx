@@ -143,7 +143,7 @@ const InterviewApp = () => {
       if (!res.ok) throw new Error("Failed to fetch questions");
       const questions: Question[] = await res.json();
       const current = questions.find((q) => q.id === interviewState?.question_id);
-      setCurrentQuestionTime(current?.response_time || 120);
+      setCurrentQuestionTime(current?.response_time && current.response_time * 60 || 120);
     } catch (err) {
       console.error(err);
       setCurrentQuestionTime(120);
