@@ -17,6 +17,10 @@ import {
   TableHead,
   TableRow,
   Modal,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import axios from "axios";
 import type { VacancyResponse } from "../types";
@@ -228,7 +232,7 @@ const ResumeScreeningPage: React.FC = () => {
           files.length > 0 && (
             <Box>
               <Typography variant="subtitle1" gutterBottom>
-                Selected Files:
+                Выбранные файлы:
               </Typography>
               <ul>
                 {files.map((file, index) => (
@@ -251,43 +255,37 @@ const ResumeScreeningPage: React.FC = () => {
         Начать проверку резюме
       </Button>
 
-      <Modal open={openModal} onClose={handleDone}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Результаты проверки резюме
-          </Typography>
-          <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2 }}>
-            <Paper elevation={1} sx={{ p: 2, flexGrow: 1, mr: 1 }}>
-              <Typography variant="subtitle1">Прошло проверку</Typography>
-              <Typography variant="h4">{passed}</Typography>
-            </Paper>
-            <Paper elevation={1} sx={{ p: 2, flexGrow: 1, ml: 1 }}>
-              <Typography variant="subtitle1">Не прошло проверку</Typography>
-              <Typography variant="h4">{failed}</Typography>
-            </Paper>
-          </Box>
-          <Typography variant="body2" sx={{ my: 2 }}>
-            Всем успешно прошедшим проверку кандидатам было отправлено приглашение
-            на прохождение интервью
-          </Typography>
-          <Button variant="contained" onClick={handleDone}>
-            Спасибо
-          </Button>
+    <Dialog open={openModal} onClose={handleDone} fullWidth maxWidth="sm">
+      <DialogTitle>
+        <Typography variant="h4" fontWeight={600} >
+        Результат проверки резюме
+        </Typography>
+        </DialogTitle>
+      <DialogContent>
+        <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2, mt: 1 }}>
+          <Paper elevation={1} sx={{ p: 2, flexGrow: 1, mr: 1 }}>
+            <Typography color="#12A543" variant="subtitle1">Прошли проверку</Typography>
+            <Typography variant="h6">{passed}</Typography>
+          </Paper>
+          <Paper elevation={1} sx={{ p: 2, flexGrow: 1, ml: 1 }}>
+            <Typography color="#F22B03" variant="subtitle1">Не прошли проверку</Typography>
+            <Typography variant="h6">{failed}</Typography>
+          </Paper>
         </Box>
-      </Modal>
+        <Paper>
+        <Typography variant="body2" >
+          Всем успешно прошедшим проверку кандидатам было отправлено приглашение на
+          прохождение интервью
+        </Typography>
+        </Paper>
+      </DialogContent>
+      <DialogActions>
+        <Button size="large" variant="contained" onClick={handleDone} fullWidth>
+          Готово
+        </Button>
+      </DialogActions>
+    </Dialog>
+
     </Box>
   );
 };
