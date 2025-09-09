@@ -73,7 +73,7 @@ const ApplyVacancy: React.FC = () => {
         success: passed,
         message: passed
           ? "Нам понравилось ваше резюме, и мы рады пригласить вас пройти интервью. Скопируйте ссылку ниже и перейдите по ней, чтобы начать интервью"
-          : "К сожалению, мы пока не готова пригласить вас на интервью",
+          : "К сожалению, мы пока не готовы пригласить вас на интервью",
         interviewLink: passed ? `https://vtb-aihr.ru/vacancy/${vacancy?.id}/interview/` + data.interview_link.split('/').at(-1) : undefined,
       });
     } catch (err) {
