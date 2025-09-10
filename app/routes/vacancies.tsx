@@ -34,24 +34,7 @@ const fetchVacancies = async () => {
     console.error("Failed to fetch real vacancies, using mock data.", err);
 
     // Mock data
-    const mockData: VacancyResponse[] = [
-      {
-        id: 1,
-        name: "Dungeon Master",
-        tags: ["boss of this gym", "dark", "deep"],
-        description: "Run the BDSM dungeon with authority and finesse.",
-        red_flags: "Requires strict obedience",
-        skill_lvl: "senior",
-      },
-      {
-        id: 2,
-        name: "Assistant Dungeon Keeper",
-        tags: ["deep", "300 bucks"],
-        description: "Assist the master in the dark and deep dungeon.",
-        red_flags: "Low tolerance for laziness",
-        skill_lvl: "middle",
-      },
-    ];
+    const mockData: VacancyResponse[] = [];
 
     setVacancies(mockData);
   } finally {

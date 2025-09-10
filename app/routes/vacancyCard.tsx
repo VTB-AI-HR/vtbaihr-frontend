@@ -48,7 +48,7 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
   };
 
   const handleEdit = () => {
-    navigate(`/questions/${vacancy.id}`);
+    navigate(`/vacancy/edit/${vacancy.id}`);
   };
 
   const handleDelete = () => {
