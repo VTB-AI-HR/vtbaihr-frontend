@@ -79,6 +79,9 @@ const theme = createTheme({
           fontWeight: 500,
           fontSize: 16,
           lineHeight: "24px",
+          "&.MuiChip-clickable:hover": {
+            backgroundColor: "#dbeeff", // only darker if clickable
+          },
         },
       },
     },

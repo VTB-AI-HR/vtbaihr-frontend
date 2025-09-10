@@ -23,6 +23,25 @@ interface VacancyPaperProps {
 
 const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }) => {
   const navigate = useNavigate();
+  const [showAllTags, setShowAllTags] = React.useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
+  const [isDescriptionLong, setIsDescriptionLong] = React.useState(false);
+  const measureRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    const el = measureRef.current;
+    if (!el) return;
+    const computed = window.getComputedStyle(el);
+    const lineHeight = parseFloat(computed.lineHeight || "0");
+    if (lineHeight > 0) {
+      const lines = Math.round(el.scrollHeight / lineHeight);
+      setIsDescriptionLong(lines > 6);
+    } else {
+      // Fallback: assume long if content overflows ~6 line heights of body2 (approx)
+      const approxLineHeight = 20; // px fallback
+      setIsDescriptionLong(el.scrollHeight > approxLineHeight * 6);
+    }
+  }, [vacancy.description]);
 
   const handleApply = () => {
     navigate(`/apply/${vacancy.id}`);
@@ -66,11 +85,78 @@ const Vacancy: React.FC<VacancyPaperProps> = ({ vacancy, isRecruiter, onDelete }
         </>
       )}
       <Typography variant="h6">{vacancy.name}</Typography>
-      <Typography variant='body2' mt={1}>{vacancy.description}</Typography>
+      <Box mt={1} position="relative">
+        <Typography
+          variant='body2'
+          sx={
+            isDescriptionLong && !isDescriptionExpanded
+              ? {
+                  display: "-webkit-box",
+                  WebkitLineClamp: 4,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }
+              : undefined
+          }
+        >
+          {vacancy.description}
+        </Typography>
+        {isDescriptionLong && !isDescriptionExpanded && (
+          <>
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 40,
+                background: (theme) =>
+                  `linear-gradient(to top, ${theme.palette.background.paper}, rgba(0,0,0,0))`,
+                pointerEvents: "none",
+              }}
+            />
+            <Button
+              size="small"
+              variant="text"
+              onClick={() => setIsDescriptionExpanded(true)}
+              sx={{ mt: 0.5, p: 0, minWidth: 0 }}
+            >
+              Показать больше
+            </Button>
+          </>
+        )}
+        {/* Hidden measurer for accurate line count at current width */}
+        <Box
+          ref={measureRef}
+          sx={{
+            position: "absolute",
+            visibility: "hidden",
+            pointerEvents: "none",
+            left: 0,
+            right: 0,
+            whiteSpace: "normal",
+          }}
+        >
+          <Typography variant='body2'>{vacancy.description}</Typography>
+        </Box>
+      </Box>
       <Stack direction="row" mt={2} flexWrap="wrap">
-        {vacancy.tags.map((tag) => (
+        {(showAllTags || vacancy.tags.length <= 4
+          ? vacancy.tags
+          : vacancy.tags.slice(0, 3)
+        ).map((tag) => (
           <Chip className="tag-chip" key={tag} label={tag} />
         ))}
+        {!showAllTags && vacancy.tags.length > 4 && (
+          <Chip
+            className="tag-chip"
+            key="more-tags"
+            label={`+${vacancy.tags.length - 3}`}
+            onClick={() => setShowAllTags(true)}
+            clickable
+            // variant="outlined"
+          />
+        )}
       </Stack>
       {
         isRecruiter !== undefined &&
