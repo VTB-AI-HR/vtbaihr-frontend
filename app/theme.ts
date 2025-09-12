@@ -151,6 +151,15 @@ const theme = createTheme({
             backgroundColor: "#2549C5",
           },
         },
+        outlinedPrimary: {
+          backgroundColor: "#ffffff",
+          color: "#3361EC",
+          border: "none",
+          "&:hover": {
+            backgroundColor: "#f5f7ff", 
+            border: "none",
+          },
+        },
         sizeLarge: {
           height: 56,
         },

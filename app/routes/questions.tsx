@@ -375,7 +375,7 @@ function QuestionListItem({ q, handleEdit, handleDelete }: {
         </DialogContent>
         <DialogActions>
           <Button variant="contained" fullWidth onClick={saveEdit}>Сохранить</Button>
-          <Button fullWidth onClick={() => setOpen(false)}>Назад</Button>
+          <Button variant="outlined" fullWidth onClick={() => setOpen(false)}>Назад</Button>
         </DialogActions>
       </Dialog>
     </>
