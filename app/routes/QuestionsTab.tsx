@@ -60,9 +60,9 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ vacancyId }) => {
 
   return (
     <Box>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ p: 0 }}>
         <Table>
-          <TableHead>
+          <TableHead style={{ backgroundColor: "#EDF6FF" }}>
             <TableRow>
               <TableCell>Вопрос</TableCell>
               <TableCell>Подсказка проверки</TableCell>

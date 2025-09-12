@@ -110,7 +110,7 @@ const ApplyVacancy: React.FC = () => {
 
   if (result) {
     return (
-      <Box mt={4} maxWidth="560px" mx="auto" mb={5}>
+      <Box mt={4} maxWidth="610px" p={3} mx="auto" mb={5}>
         <Back />
         <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
           Отклик на вакансию
@@ -164,7 +164,7 @@ const ApplyVacancy: React.FC = () => {
   }
 
   return (
-    <Box mt={4} maxWidth="560px" mx="auto">
+    <Box mt={4} maxWidth="610px" p={3} mx="auto">
       <Back />
       <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
         Отклик на вакансию

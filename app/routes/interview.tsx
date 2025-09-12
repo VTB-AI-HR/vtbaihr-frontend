@@ -393,7 +393,7 @@ const InterviewApp = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", maxWidth: 560, mx: "auto" }}>
+    <Box maxWidth='610px' p={3} sx={{ display: "flex", flexDirection: "column", height: "100vh", mx: "auto" }}>
       <Typography mb={3} mt={3} variant="h4" fontWeight={600} gutterBottom>Интервью</Typography>
       <Box sx={{ flexGrow: 1, overflowY: "auto", borderRadius: "1rem", mb: 2, display: "flex", flexDirection: "column" }}>
         {messages.map((m, i) => <MessageBubble key={i} message={m} />)}

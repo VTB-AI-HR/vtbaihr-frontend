@@ -301,7 +301,7 @@ const EditVacancy: React.FC = () => {
   }, [form, reviewWeights, interviewWeights, navigate, vacancyId]);
 
   return (
-    <Box maxWidth="560px" mx="auto" mt={4}>
+    <Box maxWidth="610px" p={3} mx="auto" mt={4}>
       <Back />
       <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
         Редактирование вакансии

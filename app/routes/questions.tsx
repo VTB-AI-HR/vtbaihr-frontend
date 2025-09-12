@@ -145,7 +145,7 @@ const QuestionsPage: React.FC = () => {
 
   return (
     <Stack direction="row" justifyContent='center' spacing={3} p={3} sx={{ height: "calc(100vh - 64px)" }}>
-      <div style={{ flex: 1, maxWidth: 560 }}>
+      <div style={{ flex: 1, maxWidth: 610, padding: 24 }}>
         <Back />
         <Typography mb={5} variant="h4" fontWeight={600} gutterBottom>
           Создание вопросов
@@ -250,7 +250,7 @@ const QuestionsPage: React.FC = () => {
       </div>
 
       {/* Right side: Questions List */}
-      <div style={{ flex: 1, maxWidth: 560 }}>
+      <div style={{ flex: 1, maxWidth: 610, padding: 24 }}>
         <Typography mt={5} mb={4} variant="h5" fontWeight={600} gutterBottom>
           Вопросы ({questions.length})
         </Typography>

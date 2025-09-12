@@ -148,7 +148,7 @@ const ResumeScreeningPage: React.FC = () => {
   }
 
   return (
-    <Box maxWidth="560px" mx="auto" p={0}>
+    <Box maxWidth="610px" mx="auto" p={3}>
       <Typography mt={5} mb={1} variant="subtitle2" fontWeight={600}>
         Первичная проверка кандидата
       </Typography>
