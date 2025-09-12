@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
   Button,
   MenuItem,
   Stack,
@@ -18,6 +17,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  CircularProgress,
+  Skeleton,
 } from "@mui/material";
 import { Edit, Delete, AutoAwesome as AutoAwesomeIcon } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router";
@@ -42,6 +43,8 @@ const QuestionsPage: React.FC = () => {
   const [genType, setGenType] = useState("soft");
   const [genCount, setGenCount] = useState(1);
   const [mode, setMode] = useState("manual");
+  const [loading, setLoading] = useState(false);
+  const [isFetchingAllQuestions, setIsFetchingAllQuestions] = useState(true);
 
   const [newQuestion, setNewQuestion] = useState<Question>({
     question: "",
@@ -56,6 +59,7 @@ const QuestionsPage: React.FC = () => {
       try {
         const res = await axios.get(`https://vtb-aihr.ru/api/vacancy/question/all/${vacancyId}`);
         setQuestions(res.data);
+        setIsFetchingAllQuestions(false)
       } catch (err) {
         console.error(err);
         alert("Failed to fetch questions");
@@ -65,6 +69,7 @@ const QuestionsPage: React.FC = () => {
   }, [vacancyId]);
 
   const handleGenerate = async () => {
+    setLoading(true);
     try {
       const res = await axios.post("https://vtb-aihr.ru/api/vacancy/question/generate", {
         vacancy_id: vacancyId,
@@ -76,7 +81,7 @@ const QuestionsPage: React.FC = () => {
       const saved: Question[] = [];
 
       for (const q of generated) {
-        delete q.id; // Remove any temporary ID before saving
+        delete q.id;
         const saveRes = await axios.post("https://vtb-aihr.ru/api/vacancy/question/add", {
           vacancy_id: vacancyId,
           ...q,
@@ -92,6 +97,8 @@ const QuestionsPage: React.FC = () => {
     } catch (err) {
       console.error(err);
       alert("Failed to generate questions");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -155,6 +162,7 @@ const QuestionsPage: React.FC = () => {
           exclusive
           onChange={(_, newMode) => newMode && setMode(newMode)}
           sx={{ width: "100%", mb: 4 }}
+          disabled={loading}
         >
           <ToggleButton value="generate" sx={{ flex: 1 }}>
             Сгенерировать <AutoAwesomeIcon sx={{ ml: 1 }} />
@@ -168,17 +176,20 @@ const QuestionsPage: React.FC = () => {
             <TextField
               label="Вопрос"
               value={newQuestion.question}
+              disabled={loading}
               onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
             />
             <TextField
               label="На что обратить внимание"
               value={newQuestion.hint_for_evaluation}
+              disabled={loading}
               onChange={(e) => setNewQuestion({ ...newQuestion, hint_for_evaluation: e.target.value })}
             />
             <Stack direction={"row"} spacing={2}>
               <TextField
                 select
                 fullWidth
+                disabled={loading}
                 label="Вес"
                 value={newQuestion.weight}
                 onChange={(e) =>
@@ -195,6 +206,7 @@ const QuestionsPage: React.FC = () => {
               <TextField
                 fullWidth
                 select
+                disabled={loading}
                 label="Что проверяем"
                 value={newQuestion.question_type}
                 onChange={(e) => setNewQuestion({ ...newQuestion, question_type: e.target.value })}
@@ -205,37 +217,44 @@ const QuestionsPage: React.FC = () => {
             </Stack>
             <TextField
               type="number"
+              disabled={loading}
               label="Время на один ответ (минуты)"
               value={newQuestion.response_time}
               onChange={(e) => setNewQuestion({ ...newQuestion, response_time: Number(e.target.value) })}
             />
           </Stack>
         ) : (
-          <>
-            <Stack spacing={2} direction={"column"}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Количество"
-                value={genCount}
-                onChange={(e) => setGenCount(Number(e.target.value))}
-              />
-              <TextField
-                fullWidth
-                select
-                label="Что проверяем"
-                value={genType}
-                onChange={(e) => setGenType(e.target.value)}
-              >
-                <MenuItem value="soft">Soft</MenuItem>
-                <MenuItem value="hard">Hard</MenuItem>
-                <MenuItem value="soft-hard">Soft-Hard</MenuItem>
-              </TextField>
-            </Stack>
-          </>
+          <Stack spacing={2} direction={"column"}>
+            <TextField
+              fullWidth
+              type="number"
+              disabled={loading}
+              label="Количество"
+              value={genCount}
+              onChange={(e) => setGenCount(Number(e.target.value))}
+            />
+            <TextField
+              fullWidth
+              select
+              disabled={loading}
+              label="Что проверяем"
+              value={genType}
+              onChange={(e) => setGenType(e.target.value)}
+            >
+              <MenuItem value="soft">Soft</MenuItem>
+              <MenuItem value="hard">Hard</MenuItem>
+              <MenuItem value="soft-hard">Soft-Hard</MenuItem>
+            </TextField>
+          </Stack>
         )}
         <Stack direction="row" spacing={2} alignItems="center" mt={2}>
-          <Button size="large" fullWidth variant="contained" onClick={mode === 'manual' ? handleAddManual : handleGenerate}>
+          <Button
+            size="large"
+            fullWidth
+            variant="contained"
+            onClick={mode === 'manual' ? handleAddManual : handleGenerate}
+            disabled={loading}
+          >
             {mode === 'manual' ? 'Создать' : 'Сгенерировать'}
           </Button>
           <Button
@@ -243,6 +262,7 @@ const QuestionsPage: React.FC = () => {
             size="large"
             variant="outlined"
             onClick={() => navigate("/vacancies?isRecruiter=true")}
+            disabled={loading}
           >
             Сохранить и выйти
           </Button>
@@ -252,24 +272,46 @@ const QuestionsPage: React.FC = () => {
       {/* Right side: Questions List */}
       <div style={{ flex: 1, maxWidth: 610, padding: 24 }}>
         <Typography mt={5} mb={4} variant="h5" fontWeight={600} gutterBottom>
-          Вопросы ({questions.length})
+          Вопросы {!isFetchingAllQuestions && '('}{!isFetchingAllQuestions && questions.length}{loading ? ` + Генерируем ${genCount}` : ""}{!isFetchingAllQuestions && ')'}
         </Typography>
         <div style={{ overflowY: "auto", height: "calc(100vh - 250px)", paddingRight: 8 }}>
-
-          {questions.length === 0 ? (
+          {isFetchingAllQuestions &&<>
+            <Skeleton variant="rounded" height={300} style={{marginBottom: 24}}/>
+            <Skeleton variant="rounded" height={300} style={{marginBottom: 24}}/>
+            <Skeleton variant="rounded" height={300}/>
+          </>
+          }
+          {questions.length === 0 && !loading && !isFetchingAllQuestions ? (
             <Paper>
               <Typography variant="h6">Создайте первый вопрос, он появится здесь</Typography>
             </Paper>
           ) : (
             <List>
-              {questions.map((q) => (
+              {questions.map((q, index) => (
                 <QuestionListItem
+                  index={index}
                   key={q.id ?? q.question}
                   q={q}
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}
                 />
               ))}
+              {}
+              {loading &&
+                Array.from({ length: genCount }).map((_, i) => (
+                  <ListItem key={`skeleton-${i}`} sx={{ backgroundColor: 'white', borderRadius: 2, mb: 3, flexDirection: 'column' }}>
+                    <div style={{ color: '#778093', alignSelf: 'flex-start' }}>
+                      Вопрос {questions.length + i + 1}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', padding: 30, gap: 20 }}>
+                      <div>
+                        Генерация вопроса...
+                      </div>
+                      <CircularProgress />
+                    </div>
+                  </ListItem>
+                ))
+              }
             </List>
           )}
         </div>
@@ -280,8 +322,9 @@ const QuestionsPage: React.FC = () => {
 
 export default QuestionsPage;
 
-function QuestionListItem({ q, handleEdit, handleDelete }: {
+function QuestionListItem({ q, index, handleEdit, handleDelete }: {
   q: Question;
+  index: number;
   handleEdit: (q: Question) => Promise<void>;
   handleDelete: (id: number) => Promise<void>;
 }) {
@@ -300,7 +343,14 @@ function QuestionListItem({ q, handleEdit, handleDelete }: {
         sx={{ backgroundColor: 'white', borderRadius: 2, mb: 3 }}
       >
         <ListItemText
-          primary={`${q.question} (${q.question_type}, weight: ${q.weight})`}
+          primary={
+            <div>
+              <div style={{ color: '#778093' }}>
+                Вопрос {index + 1}
+              </div>
+              {`${q.question} (${q.question_type}, weight: ${q.weight})`}
+            </div>
+          }
           secondary={
             <>
               Подсказка: {q.hint_for_evaluation}
