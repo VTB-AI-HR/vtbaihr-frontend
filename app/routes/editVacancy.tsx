@@ -300,6 +300,16 @@ const EditVacancy: React.FC = () => {
     }
   }, [form, reviewWeights, interviewWeights, navigate, vacancyId]);
 
+  const handleSkip = useCallback(async () => {
+    try {
+      if (!vacancyId) throw new Error("No vacancy ID");
+
+      navigate(`/questions/${vacancyId}`);
+    } catch (err) {
+      setMessage({ text: "Failed", type: "error" });
+    }
+  }, [navigate, vacancyId]);
+
   return (
     <Box maxWidth="610px" p={3} mx="auto" mt={4}>
       <Back />
@@ -412,10 +422,14 @@ const EditVacancy: React.FC = () => {
         </Box>
       )}
 
-      <Box mt={4} mb={5}>
+      <Box mt={4} mb={5} display='flex' flexDirection='column' gap={3}>
         <Button variant="contained" onClick={handleSubmit} fullWidth disabled={loading}>
           {loading ? "Сохранение..." : "Сохранить изменения"}
         </Button>
+        <Button variant="outlined" onClick={handleSkip} fullWidth disabled={loading}>
+          Пропустить и перейти к вопросам
+        </Button>
+
       </Box>
     </Box>
   );
